@@ -1,0 +1,6 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - run: deno fmt --ignore=src/api/emails/templates ./src/
+    - run: deno lint ./src/
+    - run: deno check ./src/
