@@ -108,7 +108,7 @@ export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
                           class={`relative overflow-hidden rounded-lg border ${
                             isEditRoute(location.pathname)
                               ? "min-h-[300px] lg:min-h-0 lg:flex-1"
-                              : "min-h-[300px] flex-1 md:min-h-[400px]"
+                              : "min-h-[300px] flex-1 md:min-h-[400px] md:flex-[2]"
                           }`}
                         >
                           <Map />

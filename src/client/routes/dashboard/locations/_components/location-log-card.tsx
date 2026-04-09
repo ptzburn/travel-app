@@ -33,10 +33,10 @@ export function LocationLogCard(
   return (
     <A
       href={`/dashboard/locations/${props.slug}/${props.log.id}`}
-      class="block"
+      class="block h-full"
     >
       <Card
-        class={`transition-colors hover:bg-accent/50 ${
+        class={`h-full transition-colors hover:bg-accent/50 ${
           hoveredSlug() === logSlug
             ? "border-primary ring-primary/20 ring-2"
             : ""

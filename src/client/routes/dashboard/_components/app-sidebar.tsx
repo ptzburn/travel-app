@@ -1,13 +1,20 @@
-import { useLocation, useParams } from "@solidjs/router";
+import { A, useLocation, useParams } from "@solidjs/router";
+import { Collapsible } from "~/client/components/ui/collapsible.tsx";
 import { Separator } from "~/client/components/ui/separator.tsx";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
 } from "~/client/components/ui/sidebar.tsx";
+import { useSession } from "~/client/contexts/session-context.tsx";
 import {
   isLocationLogsRoute,
   isLocationRoute,
@@ -15,6 +22,8 @@ import {
 import { AccountNav } from "~/client/routes/dashboard/_components/account-nav.tsx";
 import ChevronLeftIcon from "~icons/lucide/chevron-left";
 import ChevronRightIcon from "~icons/lucide/chevron-right";
+import PlaneIcon from "~icons/lucide/plane";
+import UsersIcon from "~icons/lucide/users";
 import { createEffect, type JSX, Match, on, Show } from "solid-js";
 import { Switch } from "solid-js";
 import { LocationLogsNav } from "./location-logs-nav.tsx";
@@ -26,6 +35,7 @@ export function AppSidebar(): JSX.Element {
   const sidebar = useSidebar();
   const location = useLocation();
   const params = useParams();
+  const session = useSession();
 
   createEffect(
     on(() => location.pathname, () => {
@@ -40,8 +50,18 @@ export function AppSidebar(): JSX.Element {
       side={sidebar.isMobile() ? "right" : "left"}
     >
       <SidebarHeader class="my-2">
-        <NavUser />
-        <Separator />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <A href="/dashboard">
+              <SidebarMenuButton size="lg" tooltip="Travel App">
+                <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <PlaneIcon class="size-4" />
+                </div>
+                <span class="truncate font-semibold">Travel App</span>
+              </SidebarMenuButton>
+            </A>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
@@ -59,6 +79,27 @@ export function AppSidebar(): JSX.Element {
         <Show when={location.pathname.startsWith("/dashboard/account")}>
           <AccountNav />
         </Show>
+        <SidebarGroup>
+          <SidebarGroupLabel>Admin</SidebarGroupLabel>
+          <SidebarMenu>
+            <Show when={session.user.role === "admin"}>
+              <Collapsible>
+                <A href="/dashboard/users">
+                  <SidebarMenuItem
+                    class={"/dashboard/users" === location.pathname
+                      ? "bg-accent rounded"
+                      : ""}
+                  >
+                    <SidebarMenuButton tooltip="Users">
+                      <UsersIcon />
+                      <span>Users</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </A>
+              </Collapsible>
+            </Show>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarTrigger
@@ -73,6 +114,8 @@ export function AppSidebar(): JSX.Element {
             <ChevronLeftIcon class="size-4" />
           </Show>
         </SidebarTrigger>
+        <Separator />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

@@ -44,7 +44,12 @@ export default function DashboardPage(): JSX.Element {
     <div class="flex min-h-0 flex-1 flex-col gap-6">
       <div class="flex items-center justify-between">
         <h2>Locations</h2>
-        <Button as={A} href="/dashboard/locations/add" size="sm">
+        <Button
+          as={A}
+          href="/dashboard/locations/add"
+          size="sm"
+          variant="outline"
+        >
           <PlusIcon />
           Add Location
         </Button>
@@ -62,7 +67,7 @@ export default function DashboardPage(): JSX.Element {
             <Show
               when={locs().length > 0}
               fallback={
-                <Empty class="border">
+                <Empty>
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
                       <MapPinIcon />
@@ -73,7 +78,12 @@ export default function DashboardPage(): JSX.Element {
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
-                    <Button as={A} href="/dashboard/locations/add" size="sm">
+                    <Button
+                      as={A}
+                      href="/dashboard/locations/add"
+                      size="sm"
+                      variant="outline"
+                    >
                       <PlusIcon />
                       Add Location
                     </Button>

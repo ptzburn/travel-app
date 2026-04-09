@@ -1,10 +1,8 @@
 import { createFileUploader } from "@solid-primitives/upload";
 import {
-  A,
   createAsync,
   revalidate,
   useAction,
-  useNavigate,
   useParams,
   useSubmission,
 } from "@solidjs/router";
@@ -13,11 +11,6 @@ import {
   uploadLocationLogImageAction,
 } from "~/client/actions/location-logs.ts";
 import { DeletionDialog } from "~/client/components/deletion-dialog.tsx";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "~/client/components/ui/alert.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
 import {
   Dialog,
@@ -30,6 +23,7 @@ import {
 } from "~/client/components/ui/dialog.tsx";
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -38,12 +32,9 @@ import {
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { getFileUrl } from "~/client/lib/utils.ts";
 import { getLocationLogByIdQuery } from "~/client/queries/location-logs.ts";
-import { LocationLogActions } from "~/client/routes/dashboard/locations/_components/location-log-actions.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
-import ArrowLeftIcon from "~icons/lucide/arrow-left";
 import ImageIcon from "~icons/lucide/image";
 import ImageUpIcon from "~icons/lucide/image-up";
-import InfoIcon from "~icons/lucide/info";
 import TrashIcon from "~icons/lucide/trash";
 import {
   createEffect,
@@ -56,16 +47,8 @@ import {
 } from "solid-js";
 import { toast } from "solid-sonner";
 
-const formatDate = (iso: string): string =>
-  new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-
 export default function LocationLogDetailPage(): JSX.Element {
   const params = useParams<{ slug: string; id: string }>();
-  const navigate = useNavigate();
   const locationLog = createAsync(() =>
     getLocationLogByIdQuery(params.slug, params.id)
   );
@@ -179,40 +162,9 @@ export default function LocationLogDetailPage(): JSX.Element {
                 description="This will permanently delete this image."
                 onDelete={handleDeleteImage}
               />
-
-              <div class="flex items-center gap-3">
-                <Button
-                  as={A}
-                  href={`/dashboard/locations/${params.slug}`}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <ArrowLeftIcon />
-                </Button>
-                <h2 class="truncate">{log().name}</h2>
-                <LocationLogActions
-                  slug={params.slug}
-                  logId={log().id}
-                  logName={log().name}
-                  onDeleted={() =>
-                    navigate(`/dashboard/locations/${params.slug}`)}
-                />
-              </div>
-
-              <Alert>
-                <InfoIcon class="size-4" />
-                <AlertTitle>
-                  {formatDate(log().startedAt)} &mdash;{" "}
-                  {formatDate(log().endedAt)}
-                </AlertTitle>
-                <Show when={log().description}>
-                  {(desc) => <AlertDescription>{desc()}</AlertDescription>}
-                </Show>
-              </Alert>
-
               <div>
                 <div class="mb-4 flex items-center justify-between">
-                  <h3>Images</h3>
+                  <h2>Images</h2>
                   <Dialog
                     open={isUploadOpen()}
                     onOpenChange={(open) => {
@@ -287,7 +239,7 @@ export default function LocationLogDetailPage(): JSX.Element {
                 <Show
                   when={log().images.length > 0}
                   fallback={
-                    <Empty class="border">
+                    <Empty>
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           <ImageIcon />
@@ -297,6 +249,16 @@ export default function LocationLogDetailPage(): JSX.Element {
                           Images will appear here once uploaded.
                         </EmptyDescription>
                       </EmptyHeader>
+                      <EmptyContent>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsUploadOpen(true)}
+                        >
+                          <ImageUpIcon class="size-4" />
+                          Upload Image
+                        </Button>
+                      </EmptyContent>
                     </Empty>
                   }
                 >

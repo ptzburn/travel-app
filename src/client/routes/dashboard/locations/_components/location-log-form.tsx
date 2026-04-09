@@ -4,17 +4,12 @@ import {
   addLocationLogAction,
   updateLocationLogAction,
 } from "~/client/actions/location-logs.ts";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "~/client/components/ui/alert.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
-import InfoIcon from "~icons/lucide/info";
 import { type Accessor, type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
+import { CoordinatesInstruction } from "./coordinates-instruction.tsx";
 
 export type LocationLogFormHandle = {
   setName: (name: string) => void;
@@ -117,6 +112,8 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
       }}
       class="flex flex-col gap-4"
     >
+      <CoordinatesInstruction />
+
       <form.AppField name="name">
         {(field) => <field.TextField label="Name" placeholder="Log name" />}
       </form.AppField>
@@ -154,16 +151,6 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
           {props.pickedLong()?.toFixed(6)}
         </p>
       </Show>
-
-      <Alert>
-        <InfoIcon class="size-4" />
-        <AlertTitle>How to set coordinates</AlertTitle>
-        <AlertDescription>
-          Double-click a point on the map to place a pin, then drag it to
-          fine-tune the position. You can also use the search bar to find a
-          place.
-        </AlertDescription>
-      </Alert>
 
       <form.AppForm>
         <form.SubmitButton disabled={!props.hasCoordinates()}>

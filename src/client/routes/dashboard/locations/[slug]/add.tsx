@@ -1,6 +1,5 @@
-import { A, createAsync, useBeforeLeave, useParams } from "@solidjs/router";
+import { createAsync, useBeforeLeave, useParams } from "@solidjs/router";
 import { ConfirmationDialog } from "~/client/components/confirmation-dialog.tsx";
-import { Button } from "~/client/components/ui/button.tsx";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
 import {
   LocationLogForm,
@@ -11,8 +10,6 @@ import {
   type SearchResult,
 } from "~/client/routes/dashboard/locations/_components/location-search.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
-
-import ArrowLeftIcon from "~icons/lucide/arrow-left";
 import { createEffect, createSignal, type JSX, onCleanup } from "solid-js";
 
 export default function AddLocationLogPage(): JSX.Element {
@@ -86,15 +83,7 @@ export default function AddLocationLogPage(): JSX.Element {
     <>
       <div class="flex min-h-0 flex-1 flex-col gap-6">
         <div class="flex items-center gap-3">
-          <Button
-            as={A}
-            href={`/dashboard/locations/${params.slug}`}
-            variant="ghost"
-            size="icon"
-          >
-            <ArrowLeftIcon />
-          </Button>
-          <h1>Add Location Log</h1>
+          <h2>Add Location Log</h2>
         </div>
 
         <div class="flex flex-col gap-4">
