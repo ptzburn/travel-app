@@ -1,7 +1,6 @@
-import { A, createAsync } from "@solidjs/router";
+import { A, createAsync, useLocation } from "@solidjs/router";
 import {
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -16,40 +15,49 @@ import { For, type JSX, Show, Suspense } from "solid-js";
 
 export function LocationsNav(): JSX.Element {
   const locations = createAsync(() => getLocationsQuery());
+  const location = useLocation();
+
+  const isActive = (slug: string): boolean =>
+    hoveredSlug() === slug ||
+    location.pathname === `/dashboard/locations/${slug}`;
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>
-        Locations
-        <SidebarGroupAction as={A} href="/dashboard/locations/add">
-          <PlusIcon />
-          <span class="sr-only">Add Location</span>
-        </SidebarGroupAction>
-      </SidebarGroupLabel>
-      <Suspense>
-        <Show when={locations()} fallback={null}>
-          {(locs) => (
-            <SidebarMenu>
+      <SidebarGroupLabel>Locations</SidebarGroupLabel>
+      <SidebarMenu>
+        <A href="/dashboard/locations/add">
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip="Add Location">
+              <PlusIcon />
+              <span class="truncate">Add Location</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </A>
+        <Suspense>
+          <Show when={locations()} fallback={null}>
+            {(locs) => (
               <For each={locs()}>
                 {(loc) => (
-                  <SidebarMenuItem
-                    onMouseEnter={() => setHoveredSlug(loc.slug)}
-                    onMouseLeave={() => setHoveredSlug(null)}
-                  >
-                    <SidebarMenuButton
-                      tooltip={loc.name}
-                      isActive={hoveredSlug() === loc.slug}
+                  <A href={`/dashboard/locations/${loc.slug}`}>
+                    <SidebarMenuItem
+                      onMouseEnter={() => setHoveredSlug(loc.slug)}
+                      onMouseLeave={() => setHoveredSlug(null)}
                     >
-                      <MapPinIcon />
-                      <span class="truncate">{loc.name}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                      <SidebarMenuButton
+                        tooltip={loc.name}
+                        isActive={isActive(loc.slug)}
+                      >
+                        <MapPinIcon />
+                        <span class="truncate">{loc.name}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </A>
                 )}
               </For>
-            </SidebarMenu>
-          )}
-        </Show>
-      </Suspense>
+            )}
+          </Show>
+        </Suspense>
+      </SidebarMenu>
     </SidebarGroup>
   );
 }

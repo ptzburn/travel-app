@@ -88,3 +88,23 @@ export const uploadLocationLogImageAction = action(
   },
   "uploadLocationLogImage",
 );
+
+export const deleteLocationLogImageAction = action(
+  async (slug: string, id: string, imageId: string) => {
+    const response = await rpcClient.images[":slug"][":id"][":imageId"]
+      .$delete({
+        param: { slug, id, imageId },
+      });
+
+    if (!response.ok) {
+      const error = await response.json();
+      if ("message" in error) {
+        throw new Error(error.message, { cause: response.status });
+      }
+      throw new Error("Unknown error");
+    }
+
+    return;
+  },
+  "deleteLocationLogImage",
+);

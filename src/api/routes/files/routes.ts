@@ -1,5 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
 
+import { notFoundSchema } from "~/api/lib/constants.ts";
 import authMiddleware from "~/api/middlewares/auth.middleware.ts";
 import jsonContent from "~/api/utils/json-content.ts";
 
@@ -75,6 +76,24 @@ export const removeUserAvatar = createRoute({
   },
 });
 
+const ImageIdParamsSchema = z.object({
+  slug: z.string().openapi({
+    param: { name: "slug", in: "path" },
+    description: "Location slug",
+    example: "new-york-a5wr1",
+  }),
+  id: z.string().openapi({
+    param: { name: "id", in: "path" },
+    description: "Location log id",
+    example: "1",
+  }),
+  imageId: z.string().openapi({
+    param: { name: "imageId", in: "path" },
+    description: "Image id",
+    example: "1",
+  }),
+});
+
 export const uploadImage = createRoute({
   summary: "uploads an image to a location log",
   description: "Upload an image to a location log",
@@ -111,6 +130,44 @@ export const uploadImage = createRoute({
   },
 });
 
+export const removeImage = createRoute({
+  summary: "deletes an image from a location log",
+  description: "Delete an image from a location log",
+  tags,
+  method: "delete",
+  path: "/images/{slug}/{id}/{imageId}",
+  middleware: [authMiddleware],
+  request: {
+    params: ImageIdParamsSchema,
+  },
+  responses: {
+    [HttpStatus.NO_CONTENT.CODE]: {
+      description: "Image deleted",
+    },
+    [HttpStatus.UNAUTHORIZED.CODE]: jsonContent(
+      unauthorizedSchema,
+      "Unauthorized",
+    ),
+    [HttpStatus.FORBIDDEN.CODE]: jsonContent(
+      forbiddenSchema,
+      "Forbidden",
+    ),
+    [HttpStatus.NOT_FOUND.CODE]: jsonContent(
+      notFoundSchema,
+      "Not found",
+    ),
+    [HttpStatus.UNPROCESSABLE_ENTITY.CODE]: jsonContent(
+      createErrorSchema(ImageIdParamsSchema),
+      "Validation error(s)",
+    ),
+    [HttpStatus.INTERNAL_SERVER_ERROR.CODE]: jsonContent(
+      serverErrorSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 export type UploadUserAvatarRoute = typeof uploadUserAvatar;
 export type RemoveUserAvatarRoute = typeof removeUserAvatar;
 export type UploadImageRoute = typeof uploadImage;
+export type RemoveImageRoute = typeof removeImage;

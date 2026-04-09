@@ -46,3 +46,7 @@ export function getServerHeaders(): Headers {
   }
   return event.request.headers;
 }
+
+export function formatDate(value: number | string): Date {
+  return new Date(value);
+}

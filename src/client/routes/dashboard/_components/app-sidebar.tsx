@@ -1,4 +1,4 @@
-import { useLocation } from "@solidjs/router";
+import { useLocation, useParams } from "@solidjs/router";
 import { Separator } from "~/client/components/ui/separator.tsx";
 import {
   Sidebar,
@@ -8,10 +8,16 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/client/components/ui/sidebar.tsx";
+import {
+  isLocationLogsRoute,
+  isLocationRoute,
+} from "~/client/routes/dashboard.tsx";
 import { AccountNav } from "~/client/routes/dashboard/_components/account-nav.tsx";
 import ChevronLeftIcon from "~icons/lucide/chevron-left";
 import ChevronRightIcon from "~icons/lucide/chevron-right";
-import { createEffect, type JSX, on, Show } from "solid-js";
+import { createEffect, type JSX, Match, on, Show } from "solid-js";
+import { Switch } from "solid-js";
+import { LocationLogsNav } from "./location-logs-nav.tsx";
 import { LocationsNav } from "./locations-nav.tsx";
 import { NavMain } from "./nav-main.tsx";
 import { NavUser } from "./nav-user.tsx";
@@ -19,6 +25,7 @@ import { NavUser } from "./nav-user.tsx";
 export function AppSidebar(): JSX.Element {
   const sidebar = useSidebar();
   const location = useLocation();
+  const params = useParams();
 
   createEffect(
     on(() => location.pathname, () => {
@@ -38,7 +45,17 @@ export function AppSidebar(): JSX.Element {
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
-        <LocationsNav />
+        <Switch>
+          <Match when={isLocationRoute(location.pathname, params.slug)}>
+            <LocationsNav />
+          </Match>
+          <Match
+            when={isLocationLogsRoute(location.pathname, params.slug) &&
+              params.slug}
+          >
+            {(slug) => <LocationLogsNav slug={slug()} />}
+          </Match>
+        </Switch>
         <Show when={location.pathname.startsWith("/dashboard/account")}>
           <AccountNav />
         </Show>

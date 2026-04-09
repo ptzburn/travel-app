@@ -6,6 +6,7 @@ import * as routes from "./routes.ts";
 const files = createRouter()
   .openapi(routes.uploadUserAvatar, handlers.uploadUserAvatar)
   .openapi(routes.removeUserAvatar, handlers.removeUserAvatar)
-  .openapi(routes.uploadImage, handlers.uploadImage);
+  .openapi(routes.uploadImage, handlers.uploadImage)
+  .openapi(routes.removeImage, handlers.removeImage);
 
 export default files;

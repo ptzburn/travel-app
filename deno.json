@@ -57,6 +57,7 @@
     "@iconify-json/logos": "npm:@iconify-json/logos@^1.2.11",
     "@iconify-json/lucide": "npm:@iconify-json/lucide@^1.2.98",
     "@iconify-json/simple-icons": "npm:@iconify-json/simple-icons@^1.2.77",
+    "@iconify-json/tabler": "npm:@iconify-json/tabler@^1.2.33",
     "@solid-primitives/upload": "npm:@solid-primitives/upload@^0.1.4",
     "@types/slug": "npm:@types/slug@^5.0.9",
     "date-fns": "npm:date-fns@^4.1.0",

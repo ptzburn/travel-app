@@ -9,6 +9,7 @@ import { auth } from "~/shared/auth.ts";
 import { NO_CONTENT, NOT_FOUND, OK } from "~/shared/http-status.ts";
 import { HTTPException } from "hono/http-exception";
 import type {
+  RemoveImageRoute,
   RemoveUserAvatarRoute,
   UploadImageRoute,
   UploadUserAvatarRoute,
@@ -78,4 +79,15 @@ export const uploadImage: AppRouteHandler<UploadImageRoute> = async (
   return c.json({
     fileUrl: url,
   }, OK.CODE);
+};
+
+export const removeImage: AppRouteHandler<RemoveImageRoute> = async (
+  c: HandlerContext<RemoveImageRoute>,
+): Promise<Response> => {
+  const user = c.get("user");
+  const { imageId } = c.req.valid("param");
+
+  await filesService.deleteLocationLogImage(Number(imageId), Number(user.id));
+
+  return c.body(null, NO_CONTENT.CODE);
 };

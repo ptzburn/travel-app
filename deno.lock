@@ -17,6 +17,7 @@
     "npm:@iconify-json/logos@^1.2.11": "1.2.11",
     "npm:@iconify-json/lucide@^1.2.98": "1.2.98",
     "npm:@iconify-json/simple-icons@^1.2.77": "1.2.77",
+    "npm:@iconify-json/tabler@^1.2.33": "1.2.33",
     "npm:@kobalte/core@~0.13.11": "0.13.11_solid-js@1.9.11",
     "npm:@kobalte/tailwindcss@0.9": "0.9.0_tailwindcss@4.2.2",
     "npm:@libsql/client@0.17": "0.17.2",
@@ -1586,6 +1587,12 @@
     },
     "@iconify-json/simple-icons@1.2.77": {
       "integrity": "sha512-oaENvo6C3BkAEWMlcQA3XemxU9v2SFOTlApSUCODAkIu1haeLCjzrmH3HgmGqjRnJjM+LevO8sA+MgdMHBFBDA==",
+      "dependencies": [
+        "@iconify/types"
+      ]
+    },
+    "@iconify-json/tabler@1.2.33": {
+      "integrity": "sha512-q9nUQfE/cjIrGh5bAKHTphitAZpT0kX9SxDgZo3Sx8ofeDTsaHVdRwrn+CfKiJ5vQ1b1btqVwizXzIgz9KEPjA==",
       "dependencies": [
         "@iconify/types"
       ]
@@ -7405,6 +7412,7 @@
       "npm:@iconify-json/logos@^1.2.11",
       "npm:@iconify-json/lucide@^1.2.98",
       "npm:@iconify-json/simple-icons@^1.2.77",
+      "npm:@iconify-json/tabler@^1.2.33",
       "npm:@kobalte/core@~0.13.11",
       "npm:@kobalte/tailwindcss@0.9",
       "npm:@libsql/client@0.17",

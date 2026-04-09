@@ -1,56 +1,60 @@
 import { revalidate, useAction, useNavigate } from "@solidjs/router";
 import { revalidateLogic } from "@tanstack/solid-form";
 import {
-  addLocationAction,
-  updateLocationAction,
-} from "~/client/actions/locations.ts";
+  addLocationLogAction,
+  updateLocationLogAction,
+} from "~/client/actions/location-logs.ts";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "~/client/components/ui/alert.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
-import { getLocationsQuery } from "~/client/queries/locations.ts";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
 import InfoIcon from "~icons/lucide/info";
 import { type Accessor, type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
 
-export type LocationFormHandle = {
+export type LocationLogFormHandle = {
   setName: (name: string) => void;
   getName: () => string;
   setCoordinates: (lat: number, long: number) => void;
   isDirty: () => boolean;
 };
 
-type LocationFormProps = {
-  location?: {
-    slug: string;
+type LocationLogFormProps = {
+  slug: string;
+  locationLog?: {
+    id: number;
     name: string;
     description: string | null;
     lat: number;
     long: number;
+    startedAt: string;
+    endedAt: string;
   };
   pickedLat: Accessor<number | null>;
   pickedLong: Accessor<number | null>;
   hasCoordinates: Accessor<boolean>;
-  onFormReady?: (handle: LocationFormHandle) => void;
+  onFormReady?: (handle: LocationLogFormHandle) => void;
 };
 
-export function LocationForm(props: LocationFormProps): JSX.Element {
+export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
   const navigate = useNavigate();
-  const addAction = useAction(addLocationAction);
-  const updateAction = useAction(updateLocationAction);
+  const addAction = useAction(addLocationLogAction);
+  const updateAction = useAction(updateLocationLogAction);
 
-  const isEdit = !!props.location;
+  const isEdit = !!props.locationLog;
 
   const form = useAppForm(() => ({
     defaultValues: {
-      name: props.location?.name ?? "",
-      description: (props.location?.description ?? "") as string | null,
-      lat: props.location?.lat ?? 0,
-      long: props.location?.long ?? 0,
+      name: props.locationLog?.name ?? "",
+      description: (props.locationLog?.description ?? "") as string | null,
+      lat: props.locationLog?.lat ?? 0,
+      long: props.locationLog?.long ?? 0,
+      startedAt: props.locationLog?.startedAt ?? "",
+      endedAt: props.locationLog?.endedAt ?? "",
     },
     validationLogic: revalidateLogic(),
     validators: {
@@ -59,7 +63,12 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
         description: z.string().max(1000).or(z.null()),
         lat: z.number().min(-90).max(90),
         long: z.number().min(-180).max(180),
-      }),
+        startedAt: z.string().min(1, "Start date is required"),
+        endedAt: z.string().min(1, "End date is required"),
+      }).refine(
+        (v) => !v.startedAt || !v.endedAt || v.startedAt <= v.endedAt,
+        { message: "Start date must be before end date", path: ["startedAt"] },
+      ),
     },
     onSubmit: async ({ value }) => {
       try {
@@ -67,17 +76,20 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
           ...value,
           description: value.description || null,
         };
-        if (props.location) {
-          await updateAction(props.location.slug, data);
-          await revalidate(getLocationBySlugQuery.key);
-          toast.success("Location updated");
+        if (props.locationLog) {
+          await updateAction(
+            props.slug,
+            String(props.locationLog.id),
+            data,
+          );
+          toast.success("Log updated");
         } else {
-          await addAction(data);
-          toast.success("Location added");
+          await addAction(data, props.slug);
+          toast.success("Log added");
         }
-        await revalidate(getLocationsQuery.key);
+        await revalidate(getLocationBySlugQuery.key);
         form.reset();
-        navigate("/dashboard");
+        navigate(`/dashboard/locations/${props.slug}`);
       } catch (error) {
         if (error instanceof Error) {
           toast.error(error.message);
@@ -106,12 +118,7 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
       class="flex flex-col gap-4"
     >
       <form.AppField name="name">
-        {(field) => (
-          <field.TextField
-            label="Name"
-            placeholder="Location name"
-          />
-        )}
+        {(field) => <field.TextField label="Name" placeholder="Log name" />}
       </form.AppField>
 
       <form.AppField name="description">
@@ -124,6 +131,23 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
         )}
       </form.AppField>
 
+      <div class="grid gap-4 sm:grid-cols-2">
+        <form.AppField name="startedAt">
+          {(field) => (
+            <field.DatePicker
+              label="Start Date"
+              placeholder="Select start date"
+            />
+          )}
+        </form.AppField>
+
+        <form.AppField name="endedAt">
+          {(field) => (
+            <field.DatePicker label="End Date" placeholder="Select end date" />
+          )}
+        </form.AppField>
+      </div>
+
       <Show when={props.hasCoordinates()}>
         <p class="text-muted-foreground text-sm tabular-nums">
           Current coordinates: {props.pickedLat()?.toFixed(6)},{" "}
@@ -135,15 +159,15 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
         <InfoIcon class="size-4" />
         <AlertTitle>How to set coordinates</AlertTitle>
         <AlertDescription>
-          Drag the marker to your desired destination, or double-click a point
-          on the map to place it there. You can also use the search bar to find
-          a place.
+          Double-click a point on the map to place a pin, then drag it to
+          fine-tune the position. You can also use the search bar to find a
+          place.
         </AlertDescription>
       </Alert>
 
       <form.AppForm>
         <form.SubmitButton disabled={!props.hasCoordinates()}>
-          {isEdit ? "Save Changes" : "Add Location"}
+          {isEdit ? "Save Changes" : "Add Log"}
         </form.SubmitButton>
       </form.AppForm>
     </form>

@@ -1,32 +1,49 @@
-import { A, createAsync, useBeforeLeave } from "@solidjs/router";
+import { A, createAsync, useBeforeLeave, useParams } from "@solidjs/router";
 import { ConfirmationDialog } from "~/client/components/confirmation-dialog.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
-import { getLocationsQuery } from "~/client/queries/locations.ts";
+import { Spinner } from "~/client/components/ui/spinner.tsx";
+import { getLocationLogByIdQuery } from "~/client/queries/location-logs.ts";
 import {
-  LocationForm,
-  type LocationFormHandle,
-} from "~/client/routes/dashboard/locations/_components/location-form.tsx";
+  LocationLogForm,
+  type LocationLogFormHandle,
+} from "~/client/routes/dashboard/locations/_components/location-log-form.tsx";
 import {
   LocationSearch,
   type SearchResult,
 } from "~/client/routes/dashboard/locations/_components/location-search.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
-
 import ArrowLeftIcon from "~icons/lucide/arrow-left";
-import { createEffect, createSignal, type JSX, onCleanup } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  type JSX,
+  onCleanup,
+  Show,
+  Suspense,
+} from "solid-js";
 
-export default function AddLocationPage(): JSX.Element {
-  const locations = createAsync(() => getLocationsQuery(), {
-    initialValue: [],
-  });
-  const [pickedLat, setPickedLat] = createSignal<number | null>(64.0);
-  const [pickedLong, setPickedLong] = createSignal<number | null>(26.0);
+export default function EditLocationLogPage(): JSX.Element {
+  const params = useParams<{ slug: string; id: string }>();
+  const locationLog = createAsync(() =>
+    getLocationLogByIdQuery(params.slug, params.id)
+  );
+
+  const [pickedLat, setPickedLat] = createSignal<number | null>(null);
+  const [pickedLong, setPickedLong] = createSignal<number | null>(null);
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = createSignal(false);
   const [pendingNavigation, setPendingNavigation] = createSignal<
     (() => void) | null
   >(null);
 
-  let formHandle: LocationFormHandle | undefined;
+  let formHandle: LocationLogFormHandle | undefined;
+
+  createEffect(() => {
+    const log = locationLog();
+    if (log && pickedLat() === null) {
+      setPickedLat(log.lat);
+      setPickedLong(log.long);
+    }
+  });
 
   const handlePick = (lat: number, long: number): void => {
     setPickedLat(lat);
@@ -40,11 +57,6 @@ export default function AddLocationPage(): JSX.Element {
       lat: pickedLat(),
       long: pickedLong(),
       onPick: handlePick,
-      zoom: 5,
-      locations: locations().map((loc) => ({
-        ...loc,
-        href: `/dashboard/locations/${loc.slug}`,
-      })),
     });
   });
 
@@ -74,25 +86,39 @@ export default function AddLocationPage(): JSX.Element {
         <div class="flex items-center gap-3">
           <Button
             as={A}
-            href="/dashboard"
+            href={`/dashboard/locations/${params.slug}`}
             variant="ghost"
             size="icon"
           >
             <ArrowLeftIcon />
           </Button>
-          <h1>Add Location</h1>
+          <h1>Edit Location Log</h1>
         </div>
 
         <div class="flex flex-col gap-4">
           <LocationSearch onSelect={handleSearchSelect} />
-          <LocationForm
-            pickedLat={pickedLat}
-            pickedLong={pickedLong}
-            hasCoordinates={hasCoordinates}
-            onFormReady={(handle) => {
-              formHandle = handle;
-            }}
-          />
+          <Suspense
+            fallback={
+              <div class="flex items-center justify-center py-8">
+                <Spinner class="size-6" />
+              </div>
+            }
+          >
+            <Show when={locationLog()}>
+              {(log) => (
+                <LocationLogForm
+                  slug={params.slug}
+                  locationLog={log()}
+                  pickedLat={pickedLat}
+                  pickedLong={pickedLong}
+                  hasCoordinates={hasCoordinates}
+                  onFormReady={(handle) => {
+                    formHandle = handle;
+                  }}
+                />
+              )}
+            </Show>
+          </Suspense>
         </div>
       </div>
 

@@ -29,7 +29,13 @@ export default function DashboardPage(): JSX.Element {
   });
 
   createEffect(() => {
-    setMapMode({ mode: "view", locations: locations() });
+    setMapMode({
+      mode: "view",
+      locations: locations().map((loc) => ({
+        ...loc,
+        href: `/dashboard/locations/${loc.slug}`,
+      })),
+    });
   });
 
   onCleanup(() => setMapMode({ mode: "view", locations: [] }));

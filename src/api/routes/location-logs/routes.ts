@@ -14,6 +14,7 @@ import * as HttpStatus from "~/shared/http-status.ts";
 import {
   InsertLocationLog,
   SelectLocationLog,
+  SelectLocationLogWithImages,
   UpdateLocationLog,
 } from "~/shared/schemas/location-logs.ts";
 
@@ -34,7 +35,7 @@ export const get = createRoute({
   },
   responses: {
     [HttpStatus.OK.CODE]: jsonContent(
-      SelectLocationLog,
+      SelectLocationLogWithImages,
       "Locaton Log schema",
     ),
     [HttpStatus.UNAUTHORIZED.CODE]: jsonContent(

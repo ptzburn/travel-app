@@ -1,5 +1,6 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/solid-form";
 
+import { DatePicker } from "~/client/components/form/date-picker.tsx";
 import { OTPFieldComponent as OTPField } from "~/client/components/form/otp-field.tsx";
 import { SelectField } from "~/client/components/form/select.tsx";
 import { SubmitButton } from "~/client/components/form/submit-button.tsx";
@@ -19,6 +20,7 @@ export const { useAppForm, withForm } = createFormHook({
     TextField,
     TextareaField,
     SelectField,
+    DatePicker,
   },
   formComponents: {
     SubmitButton,

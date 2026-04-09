@@ -1,22 +1,18 @@
-import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
+import { useColorMode } from "@kobalte/core";
+import CustomMarker from "~/client/routes/dashboard/_components/custom-marker.tsx";
 import {
   type MapLocation,
   type MapMode,
   mapMode,
 } from "~/client/stores/map-store.ts";
-import { Marker as MaplibreMarker } from "maplibre-gl";
 import type { LngLatBoundsLike } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
-import { render } from "solid-js/web";
-import {
-  Map,
-  Marker,
-  NavigationControl,
-  useMap,
-  useMapEffect,
-} from "solid-maplibre";
+
+import { Map, NavigationControl, useMap, useMapEffect } from "solid-maplibre";
+
+const LIGHT_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+const DARK_STYLE = "/styles/dark.json";
 
 function FitBounds(props: { locations: MapLocation[] }): JSX.Element {
   const getMap = useMap();
@@ -47,73 +43,27 @@ function FitBounds(props: { locations: MapLocation[] }): JSX.Element {
     onCleanup(() => cancelAnimationFrame(frame));
   });
 
-  return null as unknown as JSX.Element;
+  return;
 }
 
 function FlyToSelected(
-  props: { lat: number; long: number },
+  props: { lat: number; long: number; zoom?: number },
 ): JSX.Element {
-  useMapEffect((map) => {
-    map.flyTo({ center: [props.long, props.lat], zoom: 12 });
-  });
-  return null as unknown as JSX.Element;
-}
-
-function LocationPin(props: { slug: string }): JSX.Element {
-  const isHovered = (): boolean => hoveredSlug() === props.slug;
-
-  return (
-    <div
-      onMouseEnter={() => setHoveredSlug(props.slug)}
-      onMouseLeave={() => setHoveredSlug(null)}
-      style={{ cursor: "pointer" }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        stroke="white"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class={`transition-all duration-150 ${
-          isHovered()
-            ? "scale-125 text-red-500 drop-shadow-lg"
-            : "text-blue-500"
-        }`}
-      >
-        <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-        <circle cx="12" cy="10" r="3" fill="white" stroke="white" />
-      </svg>
-    </div>
-  );
-}
-
-function LocationMarker(props: { location: MapLocation }): JSX.Element {
   const getMap = useMap();
-  let marker: MaplibreMarker | undefined;
-  let dispose: (() => void) | undefined;
 
   createEffect(() => {
     const map = getMap?.();
-    if (!map || marker) return;
+    if (!map) return;
 
-    const el = document.createElement("div");
-    dispose = render(() => <LocationPin slug={props.location.slug} />, el);
+    const frame = requestAnimationFrame(() => {
+      map.resize();
+      map.flyTo({ center: [props.long, props.lat], zoom: props.zoom ?? 12 });
+    });
 
-    marker = new MaplibreMarker({ element: el, anchor: "bottom" })
-      .setLngLat([props.location.long, props.location.lat])
-      .addTo(map);
+    onCleanup(() => cancelAnimationFrame(frame));
   });
 
-  onCleanup(() => {
-    dispose?.();
-    marker?.remove();
-  });
-
-  return null as unknown as JSX.Element;
+  return;
 }
 
 function ViewModeContent(props: { mode: MapMode }): JSX.Element {
@@ -125,12 +75,29 @@ function ViewModeContent(props: { mode: MapMode }): JSX.Element {
         <>
           <FitBounds locations={vm().locations} />
           <For each={vm().locations}>
-            {(loc) => <LocationMarker location={loc} />}
+            {(loc) => (
+              <CustomMarker
+                lat={loc.lat}
+                long={loc.long}
+                slug={loc.slug}
+                name={loc.name}
+                description={loc.description}
+                href={loc.href}
+              />
+            )}
           </For>
         </>
       )}
     </Show>
   );
+}
+
+function MapThemeStyle(): JSX.Element {
+  const { colorMode } = useColorMode();
+  useMapEffect((map) => {
+    map.setStyle(colorMode() === "dark" ? DARK_STYLE : LIGHT_STYLE);
+  });
+  return;
 }
 
 function PickModeContent(props: { mode: MapMode }): JSX.Element {
@@ -139,42 +106,71 @@ function PickModeContent(props: { mode: MapMode }): JSX.Element {
   const coords = (): {
     lat: number;
     long: number;
+    zoom: number | undefined;
     onPick: (lat: number, long: number) => void;
   } | undefined => {
     const pm = pickMode();
     if (!pm || pm.lat === null || pm.long === null) return undefined;
-    return { lat: pm.lat, long: pm.long, onPick: pm.onPick };
+    return { lat: pm.lat, long: pm.long, zoom: pm.zoom, onPick: pm.onPick };
+  };
+
+  const centerOnly = () => {
+    const pm = pickMode();
+    if (!pm || pm.lat !== null || !pm.center) return undefined;
+    return { ...pm.center, zoom: pm.zoom };
   };
 
   return (
     <Show when={pickMode()}>
-      <Show when={coords()}>
-        {(c) => (
-          <>
-            <FlyToSelected lat={c().lat} long={c().long} />
-            <Marker
-              position={[c().long, c().lat]}
-              draggable
-              ondragend={(e) => {
-                const lngLat = e.target.getLngLat();
-                c().onPick(lngLat.lat, lngLat.lng);
-              }}
-            />
-          </>
-        )}
-      </Show>
+      {(pm) => (
+        <>
+          <For each={pm().locations ?? []}>
+            {(loc) => (
+              <CustomMarker
+                lat={loc.lat}
+                long={loc.long}
+                slug={loc.slug}
+                name={loc.name}
+                description={loc.description}
+                href={loc.href}
+              />
+            )}
+          </For>
+          <Show when={centerOnly()}>
+            {(c) => (
+              <FlyToSelected lat={c().lat} long={c().long} zoom={c().zoom} />
+            )}
+          </Show>
+          <Show when={coords()}>
+            {(c) => (
+              <>
+                <FlyToSelected lat={c().lat} long={c().long} zoom={c().zoom} />
+                <CustomMarker
+                  lat={c().lat}
+                  long={c().long}
+                  color="text-emerald-500"
+                  tooltip="Drag to your desired destination"
+                  draggable
+                  onDragEnd={c().onPick}
+                />
+              </>
+            )}
+          </Show>
+        </>
+      )}
     </Show>
   );
 }
 
 export default function UnifiedMap(): JSX.Element {
   const mode = mapMode;
+  const { colorMode } = useColorMode();
 
   return (
     <Map
       style={{ width: "100%", height: "100%" }}
       options={{
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+        style: colorMode() === "dark" ? DARK_STYLE : LIGHT_STYLE,
         center: [0, 20],
         zoom: 2,
       }}
@@ -185,6 +181,7 @@ export default function UnifiedMap(): JSX.Element {
       }}
     >
       <NavigationControl position="top-right" />
+      <MapThemeStyle />
       <ViewModeContent mode={mode()} />
       <PickModeContent mode={mode()} />
     </Map>

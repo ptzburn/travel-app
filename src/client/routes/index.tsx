@@ -9,58 +9,51 @@ import {
   CardTitle,
 } from "~/client/components/ui/card.tsx";
 import { Separator } from "~/client/components/ui/separator.tsx";
-import BxlBetterAuth from "~icons/bxl/better-auth";
-import BxlDeno from "~icons/bxl/deno";
-import Github from "~icons/bxl/github";
-import BxlShadcnUi from "~icons/bxl/shadcn-ui";
-import LogosHono from "~icons/logos/hono";
-import LogosSolidjsIcon from "~icons/logos/solidjs-icon";
 import ArrowRight from "~icons/lucide/arrow-right";
-import SimpleIconsTanstack from "~icons/simple-icons/tanstack";
+import CalendarDays from "~icons/lucide/calendar-days";
+import Camera from "~icons/lucide/camera";
+import Globe from "~icons/lucide/globe";
+import MapIcon from "~icons/lucide/map";
+import MapPin from "~icons/lucide/map-pin";
+import Route from "~icons/lucide/route";
 import { For, type JSX } from "solid-js";
 
 const features = [
   {
-    icon: BxlDeno,
-    title: "Deno",
+    icon: MapIcon,
+    title: "Interactive Map",
     description:
-      "Secure runtime with first-class TypeScript support, built-in tooling, and web-standard APIs.",
-    href: "https://deno.com/",
+      "Explore your world on a beautiful, responsive map. Pan, zoom, and discover all your saved places at a glance.",
   },
   {
-    icon: LogosSolidjsIcon,
-    title: "SolidStart",
+    icon: MapPin,
+    title: "Pin Your Places",
     description:
-      "Fine-grained reactive UI framework with file-based routing, SSR, and streaming.",
-    href: "https://start.solidjs.com/",
+      "Save locations by dropping a pin on the map. Add names, descriptions, and coordinates for every spot that matters.",
   },
   {
-    icon: LogosHono,
-    title: "Hono",
+    icon: CalendarDays,
+    title: "Log Your Visits",
     description:
-      "Ultrafast web framework for the edge with OpenAPI support and type-safe routes.",
-    href: "https://hono.dev/",
+      "Record each visit with dates, notes, and exact coordinates. Build a timeline of memories for every location.",
   },
   {
-    icon: BxlBetterAuth,
-    title: "Better Auth",
+    icon: Camera,
+    title: "Photo Journals",
     description:
-      "Full-featured authentication with social logins, passkeys, 2FA, and session management.",
-    href: "https://better-auth.com/",
+      "Attach photos to your logs and relive the moments. Upload, browse, and manage your travel gallery.",
   },
   {
-    icon: BxlShadcnUi,
-    title: "shadcn/ui",
+    icon: Route,
+    title: "Track Your Journey",
     description:
-      "Beautiful, accessible component library built on Kobalte primitives with Tailwind CSS.",
-    href: "https://solid-ui.com/",
+      "See all your visits on the map with custom markers. Hover to highlight, click to dive into the details.",
   },
   {
-    icon: SimpleIconsTanstack,
-    title: "TanStack Form",
+    icon: Globe,
+    title: "Dark & Light Modes",
     description:
-      "Headless, type-safe form management with built-in validation and framework adapters.",
-    href: "https://tanstack.com/form",
+      "Switch between light and dark map styles that adapt to your theme preference — day or night.",
   },
 ];
 
@@ -69,60 +62,41 @@ export default function LandingPage(): JSX.Element {
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <header class="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
         <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <span class="font-semibold text-sm tracking-tight">
-            Starter Template
-          </span>
+          <span class="font-semibold text-sm tracking-tight">Travel App</span>
           <div class="flex items-center gap-2">
             <ThemeToggle />
             <Button as={A} href="/auth/sign-in" size="sm">
               Sign in
-            </Button>
-            <Button
-              as="a"
-              href="https://github.com/ptzburn/solidstart-hono-starter"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="ghost"
-              size="icon-sm"
-            >
-              <Github class="size-6" />
-              <span class="sr-only">GitHub</span>
             </Button>
           </div>
         </div>
       </header>
 
       <main class="flex flex-1 flex-col">
-        <section class="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
+        <section class="relative flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
+          <div class="pointer-events-none absolute inset-0 overflow-hidden">
+            <div class="absolute top-1/4 left-1/2 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-3xl" />
+            <div class="absolute right-0 bottom-0 size-[400px] translate-x-1/4 translate-y-1/4 rounded-full bg-primary/5 blur-3xl" />
+          </div>
+
           <Badge variant="secondary" round>
-            Starter Template
+            Your personal travel companion
           </Badge>
 
-          <div class="flex max-w-2xl flex-col gap-4">
+          <div class="relative flex max-w-2xl flex-col gap-4">
             <h1 class="font-bold text-4xl tracking-tight sm:text-5xl lg:text-6xl">
-              Ship faster with the{" "}
-              <span class="text-primary">modern stack</span>
+              Map your memories, <span class="text-primary">pin by pin</span>
             </h1>
             <p class="mx-auto max-w-lg text-lg text-muted-foreground">
-              A production-ready starter with authentication, API layer, and
-              polished UI — so you can focus on what matters.
+              Save the places you love, log every visit with photos and notes,
+              and watch your personal map come alive.
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center justify-center gap-3">
+          <div class="relative flex flex-wrap items-center justify-center gap-3">
             <Button as={A} href="/auth/sign-in" size="lg">
-              Get started
+              Start mapping
               <ArrowRight class="size-4" />
-            </Button>
-            <Button
-              as="a"
-              href="https://github.com/ptzburn/solidstart-hono-starter"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="ghost"
-              size="lg"
-            >
-              <Github class="size-8" />
             </Button>
           </div>
         </section>
@@ -132,32 +106,26 @@ export default function LandingPage(): JSX.Element {
         <section class="mx-auto w-full max-w-5xl px-6 py-20">
           <div class="mb-12 text-center">
             <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
-              Everything you need to get started
+              Everything you need to remember every place
             </h2>
             <p class="mt-2 text-muted-foreground">
-              Batteries-included with best-in-class tooling.
+              An interactive map, visit logs, and photo journals — all in one
+              dashboard.
             </p>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <For each={features}>
               {(feature) => (
-                <a
-                  href={feature.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring"
-                >
-                  <Card class="h-full transition-colors hover:border-primary/40">
-                    <CardHeader>
-                      <div class="mb-2 flex size-10 items-center justify-center rounded-md border bg-muted">
-                        <feature.icon class="size-5 text-primary" />
-                      </div>
-                      <CardTitle>{feature.title}</CardTitle>
-                      <CardDescription>{feature.description}</CardDescription>
-                    </CardHeader>
-                  </Card>
-                </a>
+                <Card class="h-full transition-colors hover:border-primary/40">
+                  <CardHeader>
+                    <div class="mb-2 flex size-10 items-center justify-center rounded-md border bg-muted">
+                      <feature.icon class="size-5 text-primary" />
+                    </div>
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
               )}
             </For>
           </div>
@@ -165,33 +133,66 @@ export default function LandingPage(): JSX.Element {
 
         <Separator />
 
-        <section class="flex flex-col items-center gap-6 px-6 py-20 text-center">
-          <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
-            Ready to build?
-          </h2>
-          <p class="max-w-md text-muted-foreground">
-            Sign in to explore the dashboard and see the full stack in action.
-          </p>
-          <div class="flex flex-wrap items-center justify-center gap-3">
-            <Button as={A} href="/auth/sign-in" size="lg">
-              Sign in
-              <ArrowRight class="size-4" />
-            </Button>
-            <Button
-              as="a"
-              href="https://github.com/ptzburn/solidstart-hono-starter"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="ghost"
-              size="lg"
-            >
-              <Github class="size-8" />
-            </Button>
+        <section class="mx-auto w-full max-w-4xl px-6 py-20">
+          <div class="mb-12 text-center">
+            <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
+              How it works
+            </h2>
+          </div>
+
+          <div class="grid gap-8 sm:grid-cols-3">
+            <div class="flex flex-col items-center gap-3 text-center">
+              <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
+                1
+              </div>
+              <h3 class="font-semibold text-lg">Drop a pin</h3>
+              <p class="text-muted-foreground text-sm">
+                Find a spot on the map and save it as a location with a name and
+                description.
+              </p>
+            </div>
+
+            <div class="flex flex-col items-center gap-3 text-center">
+              <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
+                2
+              </div>
+              <h3 class="font-semibold text-lg">Log your visits</h3>
+              <p class="text-muted-foreground text-sm">
+                Add entries with dates, notes, and photos each time you visit or
+                want to remember something.
+              </p>
+            </div>
+
+            <div class="flex flex-col items-center gap-3 text-center">
+              <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
+                3
+              </div>
+              <h3 class="font-semibold text-lg">Explore your map</h3>
+              <p class="text-muted-foreground text-sm">
+                See all your places and visits on one interactive map. Click any
+                marker to dive in.
+              </p>
+            </div>
           </div>
         </section>
 
+        <Separator />
+
+        <section class="flex flex-col items-center gap-6 px-6 py-20 text-center">
+          <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
+            Ready to start pinning?
+          </h2>
+          <p class="max-w-md text-muted-foreground">
+            Sign in and build your personal travel map — one memory at a time.
+          </p>
+          <Button as={A} href="/auth/sign-in" size="lg">
+            Get started
+            <ArrowRight class="size-4" />
+          </Button>
+        </section>
+
         <footer class="border-t py-6 text-center text-muted-foreground text-sm">
-          This template was built by{" "}
+          Built by{" "}
           <a
             href="https://github.com/ptzburn"
             target="_blank"
@@ -200,7 +201,6 @@ export default function LandingPage(): JSX.Element {
           >
             ptzburn
           </a>
-          .
         </footer>
       </main>
     </div>

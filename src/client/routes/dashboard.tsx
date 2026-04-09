@@ -22,16 +22,47 @@ const Map = clientOnly(() =>
 );
 
 const locationEditPattern = /^\/dashboard\/locations\/[^/]+\/edit$/;
+const locationDetailPattern = /^\/dashboard\/locations\/[^/]+$/;
+const locationLogAddPattern = /^\/dashboard\/locations\/[^/]+\/add$/;
+const locationLogDetailPattern = /^\/dashboard\/locations\/[^/]+\/\d+$/;
+const locationLogEditPattern = /^\/dashboard\/locations\/[^/]+\/[^/]+\/edit$/;
+
+export function isLocationRoute(path: string, slug?: string): boolean {
+  const locationRoutes = new Set([
+    "/dashboard",
+    "/dashboard/locations/add",
+  ]);
+  if (slug) {
+    locationRoutes.add(`/dashboard/locations/${slug}/edit`);
+  }
+  return locationRoutes.has(path);
+}
+
+export function isLocationLogsRoute(path: string, slug?: string): boolean {
+  const locationLogsRoutes = new Set<string>([]);
+  if (slug) {
+    locationLogsRoutes.add(`/dashboard/locations/${slug}`);
+    locationLogsRoutes.add(`/dashboard/locations/${slug}/add`);
+  }
+  return locationLogsRoutes.has(path) ||
+    locationLogEditPattern.test(path);
+}
 
 function showsMap(path: string): boolean {
   return path === "/dashboard" ||
     path === "/dashboard/locations/add" ||
-    locationEditPattern.test(path);
+    locationEditPattern.test(path) ||
+    locationDetailPattern.test(path) ||
+    locationLogDetailPattern.test(path) ||
+    locationLogAddPattern.test(path) ||
+    locationLogEditPattern.test(path);
 }
 
 function isEditRoute(path: string): boolean {
   return path === "/dashboard/locations/add" ||
-    locationEditPattern.test(path);
+    locationEditPattern.test(path) ||
+    locationLogAddPattern.test(path) ||
+    locationLogEditPattern.test(path);
 }
 
 export default function DashboardLayout(props: RouteSectionProps): JSX.Element {

@@ -7,6 +7,7 @@ export interface MapLocation {
   description: string | null;
   lat: number;
   long: number;
+  href: string;
 }
 
 interface ViewMode {
@@ -19,6 +20,9 @@ interface PickMode {
   lat: number | null;
   long: number | null;
   onPick: (lat: number, long: number) => void;
+  center?: { lat: number; long: number };
+  zoom?: number;
+  locations?: MapLocation[];
 }
 
 export type MapMode = ViewMode | PickMode;

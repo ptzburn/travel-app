@@ -11,7 +11,8 @@ import db from "~/api/db/index.ts";
 import { locationLogImages } from "~/api/db/schema/index.ts";
 import type { SelectLocationLogImage } from "~/api/types/location-log-images.ts";
 import env from "~/env.ts";
-import { INTERNAL_SERVER_ERROR } from "~/shared/http-status.ts";
+import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "~/shared/http-status.ts";
+import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 const client = new S3Client({
@@ -133,4 +134,32 @@ export async function insertLocationLogImage(
   }
 
   return inserted;
+}
+
+export async function deleteLocationLogImage(
+  imageId: number,
+  userId: number,
+): Promise<void> {
+  const image = await db.query.locationLogImages.findFirst({
+    where: {
+      id: imageId,
+      userId,
+    },
+  });
+
+  if (!image) {
+    throw new HTTPException(NOT_FOUND.CODE, {
+      message: NOT_FOUND.MESSAGE,
+    });
+  }
+
+  const deleteCommand = new DeleteObjectCommand({
+    Bucket: env.S3_BUCKET,
+    Key: image.key,
+  });
+  await client.send(deleteCommand);
+
+  await db.delete(locationLogImages).where(
+    eq(locationLogImages.id, imageId),
+  );
 }
