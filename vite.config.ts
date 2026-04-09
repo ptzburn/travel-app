@@ -18,6 +18,12 @@ export default defineConfig({
   build: {
     target: "esnext",
   },
+  optimizeDeps: {
+    include: ["maplibre-gl"],
+  },
+  ssr: {
+    noExternal: ["maplibre-gl", "solid-maplibre"],
+  },
   plugins: [
     tailwindcss(),
     solidStart({

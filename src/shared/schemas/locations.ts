@@ -4,7 +4,10 @@ import { z } from "zod";
 import { SelectLocationLogWithImages } from "./location-logs.ts";
 import { DescriptionSchema, LatSchema, LongSchema, NameSchema } from "./zod.ts";
 
-export const SelectLocation = createSelectSchema(locations);
+export const SelectLocation = createSelectSchema(locations, {
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
 export const SelectLocationWithLogsSchema = SelectLocation.extend({
   locationLogs: z.array(SelectLocationLogWithImages),
 });

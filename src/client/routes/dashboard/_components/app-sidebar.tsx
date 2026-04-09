@@ -12,6 +12,7 @@ import { AccountNav } from "~/client/routes/dashboard/_components/account-nav.ts
 import ChevronLeftIcon from "~icons/lucide/chevron-left";
 import ChevronRightIcon from "~icons/lucide/chevron-right";
 import { createEffect, type JSX, on, Show } from "solid-js";
+import { LocationsNav } from "./locations-nav.tsx";
 import { NavMain } from "./nav-main.tsx";
 import { NavUser } from "./nav-user.tsx";
 
@@ -37,6 +38,7 @@ export function AppSidebar(): JSX.Element {
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
+        <LocationsNav />
         <Show when={location.pathname.startsWith("/dashboard/account")}>
           <AccountNav />
         </Show>
