@@ -12,6 +12,7 @@ import unauthorizedSchema from "~/api/utils/open-api-schemas/unauthorized.schema
 import * as HttpStatus from "~/shared/http-status.ts";
 import {
   InsertLocation,
+  LocationQueryParams,
   SelectLocation,
   SelectLocationWithLogsSchema,
   UpdateLocation,
@@ -27,6 +28,9 @@ export const get = createRoute({
   method: "get",
   path: "/locations",
   middleware: [authMiddleware],
+  request: {
+    query: LocationQueryParams,
+  },
   responses: {
     [HttpStatus.OK.CODE]: jsonContent(
       z.array(SelectLocation),

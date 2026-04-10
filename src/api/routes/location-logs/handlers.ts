@@ -17,6 +17,7 @@ import {
 import { HTTPException } from "hono/http-exception";
 import type { GetRoute, PostRoute, PutRoute, RemoveRoute } from "./routes.ts";
 import {
+  assertWithinRadius,
   deleteLocationLog,
   findLocationLog,
   insertLocationLog,
@@ -57,6 +58,13 @@ export const post: AppRouteHandler<PostRoute> = async (
 
   const location = await findLocationWithLogs(slug, Number(user.id));
 
+  assertWithinRadius(
+    locationLogData.lat,
+    locationLogData.long,
+    location.lat,
+    location.long,
+  );
+
   const newLocationLog = await insertLocationLog(
     location.id,
     {
@@ -74,7 +82,7 @@ export const put: AppRouteHandler<PutRoute> = async (
   c: HandlerContext<PutRoute>,
 ): HandlerReturn<PutRoute> => {
   const updates = c.req.valid("json");
-  const { id } = c.req.valid("param");
+  const { slug, id } = c.req.valid("param");
   const user = c.get("user");
 
   if (Object.keys(updates).length === 0) {
@@ -82,6 +90,21 @@ export const put: AppRouteHandler<PutRoute> = async (
       message: UNPROCESSABLE_ENTITY.MESSAGE,
     });
   }
+
+  const location = await findLocationBySlug(slug);
+
+  if (!location) {
+    throw new HTTPException(NOT_FOUND.CODE, {
+      message: NOT_FOUND.MESSAGE,
+    });
+  }
+
+  assertWithinRadius(
+    updates.lat,
+    updates.long,
+    location.lat,
+    location.long,
+  );
 
   const updatedLocationLog = await updateLocationLog(
     Number(id),

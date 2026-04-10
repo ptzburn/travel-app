@@ -13,13 +13,19 @@ import {
 import { DeletionDialog } from "~/client/components/deletion-dialog.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/client/components/ui/carousel.tsx";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/client/components/ui/dialog.tsx";
 import {
   Empty,
@@ -30,9 +36,11 @@ import {
   EmptyTitle,
 } from "~/client/components/ui/empty.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
+import { TooltipButton } from "~/client/components/ui/tooltip-button.tsx";
 import { getFileUrl } from "~/client/lib/utils.ts";
 import { getLocationLogByIdQuery } from "~/client/queries/location-logs.ts";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import LucideCirclePlus from "~icons/lucide/circle-plus";
 import ImageIcon from "~icons/lucide/image";
 import ImageUpIcon from "~icons/lucide/image-up";
 import TrashIcon from "~icons/lucide/trash";
@@ -66,6 +74,9 @@ export default function LocationLogDetailPage(): JSX.Element {
   );
   const [isDeleteOpen, setIsDeleteOpen] = createSignal(false);
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const [viewingImageIndex, setViewingImageIndex] = createSignal<number | null>(
+    null,
+  );
 
   const handleDeleteImage = async (): Promise<void> => {
     const imageId = deletingImageId();
@@ -162,9 +173,51 @@ export default function LocationLogDetailPage(): JSX.Element {
                 description="This will permanently delete this image."
                 onDelete={handleDeleteImage}
               />
+              <Dialog
+                open={viewingImageIndex() !== null}
+                onOpenChange={(open) => {
+                  if (!open) setViewingImageIndex(null);
+                }}
+              >
+                <DialogContent class="max-w-4xl overflow-hidden p-0">
+                  <div class="px-12 py-6">
+                    <Carousel
+                      opts={{
+                        loop: true,
+                        startIndex: viewingImageIndex() ?? 0,
+                      }}
+                    >
+                      <CarouselContent>
+                        <For each={log().images}>
+                          {(image) => (
+                            <CarouselItem>
+                              <img
+                                src={getFileUrl(image.key)}
+                                alt={log().name}
+                                class="max-h-[80vh] w-full rounded-lg object-contain"
+                              />
+                            </CarouselItem>
+                          )}
+                        </For>
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <div>
                 <div class="mb-4 flex items-center justify-between">
-                  <h2>Images</h2>
+                  <h2>Images from {log().name}</h2>
+                  <TooltipButton
+                    tooltip="Upload Image"
+                    size="icon-lg"
+                    variant="ghost"
+                    onClick={() => setIsUploadOpen(true)}
+                  >
+                    <LucideCirclePlus class="size-5" />
+                    <span class="sr-only">Upload Image</span>
+                  </TooltipButton>
                   <Dialog
                     open={isUploadOpen()}
                     onOpenChange={(open) => {
@@ -172,14 +225,6 @@ export default function LocationLogDetailPage(): JSX.Element {
                       if (!open) clearFiles();
                     }}
                   >
-                    <DialogTrigger
-                      as={Button}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <ImageUpIcon class="size-4" />
-                      Upload Image
-                    </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Upload Image</DialogTitle>
@@ -262,30 +307,39 @@ export default function LocationLogDetailPage(): JSX.Element {
                     </Empty>
                   }
                 >
-                  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <For each={log().images}>
-                      {(image) => (
-                        <div class="group relative overflow-hidden rounded-lg border">
-                          <img
-                            src={getFileUrl(image.key)}
-                            alt={log().name}
-                            class="aspect-video w-full object-cover"
-                            loading="lazy"
-                          />
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            class="absolute top-2 right-2 size-8 opacity-0 transition-opacity group-hover:opacity-100"
-                            onClick={() => {
-                              setDeletingImageId(image.id);
-                              setIsDeleteOpen(true);
-                            }}
-                          >
-                            <TrashIcon class="size-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </For>
+                  <div class="mx-auto w-full px-12">
+                    <Carousel opts={{ loop: true }}>
+                      <CarouselContent>
+                        <For each={log().images}>
+                          {(image, index) => (
+                            <CarouselItem class="md:basis-1/2 lg:basis-1/3">
+                              <div class="group relative overflow-hidden rounded-lg border">
+                                <img
+                                  src={getFileUrl(image.key)}
+                                  alt={log().name}
+                                  class="aspect-video w-full cursor-pointer object-cover"
+                                  loading="lazy"
+                                  onClick={() => setViewingImageIndex(index())}
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  class="absolute top-2 right-2 size-8 opacity-0 transition-opacity group-hover:opacity-100"
+                                  onClick={() => {
+                                    setDeletingImageId(image.id);
+                                    setIsDeleteOpen(true);
+                                  }}
+                                >
+                                  <TrashIcon class="size-4" />
+                                </Button>
+                              </div>
+                            </CarouselItem>
+                          )}
+                        </For>
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
                   </div>
                 </Show>
               </div>

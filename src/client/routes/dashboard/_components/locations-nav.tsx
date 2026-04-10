@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "~/client/components/ui/sidebar.tsx";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
+import { locationFilters } from "~/client/stores/location-filters.ts";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
 
 import MapPinIcon from "~icons/lucide/map-pin";
@@ -14,7 +15,14 @@ import PlusIcon from "~icons/lucide/plus";
 import { For, type JSX, Show, Suspense } from "solid-js";
 
 export function LocationsNav(): JSX.Element {
-  const locations = createAsync(() => getLocationsQuery());
+  const locations = createAsync(() => {
+    const f = locationFilters();
+    return getLocationsQuery({
+      search: f.search || undefined,
+      sortBy: f.sortBy,
+      sortDirection: f.sortDirection,
+    });
+  });
   const location = useLocation();
 
   const isActive = (slug: string): boolean =>

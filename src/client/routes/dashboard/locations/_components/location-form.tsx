@@ -44,8 +44,8 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
     defaultValues: {
       name: props.location?.name ?? "",
       description: (props.location?.description ?? "") as string | null,
-      lat: props.location?.lat ?? 0,
-      long: props.location?.long ?? 0,
+      lat: props.location?.lat ?? (props.pickedLat() ?? 0),
+      long: props.location?.long ?? (props.pickedLong() ?? 0),
     },
     validationLogic: revalidateLogic(),
     validators: {

@@ -7,9 +7,45 @@ import {
 } from "~/client/stores/map-store.ts";
 import type { LngLatBoundsLike } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  For,
+  type JSX,
+  onCleanup,
+  Show,
+} from "solid-js";
 
 import { Map, NavigationControl, useMap, useMapEffect } from "solid-maplibre";
+
+const RADIUS_SOURCE_ID = "radius-circle-source";
+const RADIUS_FILL_LAYER_ID = "radius-circle-fill";
+const RADIUS_LINE_LAYER_ID = "radius-circle-line";
+
+function circlePolygon(
+  centerLat: number,
+  centerLng: number,
+  radiusKm: number,
+  points = 64,
+): GeoJSON.Feature<GeoJSON.Polygon> {
+  const coords: [number, number][] = [];
+  for (let i = 0; i <= points; i++) {
+    const angle = (i / points) * 2 * Math.PI;
+    const dLat = (radiusKm / 6371) * Math.cos(angle);
+    const dLng = (radiusKm / 6371) *
+      Math.sin(angle) /
+      Math.cos((centerLat * Math.PI) / 180);
+    coords.push([
+      centerLng + (dLng * 180) / Math.PI,
+      centerLat + (dLat * 180) / Math.PI,
+    ]);
+  }
+  return {
+    type: "Feature",
+    properties: {},
+    geometry: { type: "Polygon", coordinates: [coords] },
+  };
+}
 
 const LIGHT_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const DARK_STYLE = "/styles/dark.json";
@@ -100,6 +136,80 @@ function MapThemeStyle(): JSX.Element {
   return;
 }
 
+function RadiusCircle(props: {
+  lat: number;
+  long: number;
+  radiusKm: number;
+}): JSX.Element {
+  const getMap = useMap();
+
+  const geojson = createMemo(() =>
+    circlePolygon(props.lat, props.long, props.radiusKm)
+  );
+
+  function ensureLayers(map: maplibregl.Map): void {
+    if (!map.isStyleLoaded()) return;
+
+    const source = map.getSource(RADIUS_SOURCE_ID);
+    if (source && "setData" in source) {
+      (source as maplibregl.GeoJSONSource).setData(geojson());
+      return;
+    }
+
+    map.addSource(RADIUS_SOURCE_ID, {
+      type: "geojson",
+      data: geojson(),
+    });
+
+    map.addLayer({
+      id: RADIUS_FILL_LAYER_ID,
+      type: "fill",
+      source: RADIUS_SOURCE_ID,
+      paint: {
+        "fill-color": "#3b82f6",
+        "fill-opacity": 0.1,
+      },
+    });
+
+    map.addLayer({
+      id: RADIUS_LINE_LAYER_ID,
+      type: "line",
+      source: RADIUS_SOURCE_ID,
+      paint: {
+        "line-color": "#3b82f6",
+        "line-width": 2,
+        "line-dasharray": [2, 2],
+      },
+    });
+  }
+
+  useMapEffect((map) => {
+    ensureLayers(map);
+  });
+
+  createEffect(() => {
+    const map = getMap?.();
+    if (!map) return;
+    const handler = () => ensureLayers(map);
+    map.on("styledata", handler);
+    onCleanup(() => map.off("styledata", handler));
+  });
+
+  onCleanup(() => {
+    const map = getMap?.();
+    if (!map) return;
+    if (map.getLayer(RADIUS_LINE_LAYER_ID)) {
+      map.removeLayer(RADIUS_LINE_LAYER_ID);
+    }
+    if (map.getLayer(RADIUS_FILL_LAYER_ID)) {
+      map.removeLayer(RADIUS_FILL_LAYER_ID);
+    }
+    if (map.getSource(RADIUS_SOURCE_ID)) map.removeSource(RADIUS_SOURCE_ID);
+  });
+
+  return;
+}
+
 function PickModeContent(props: { mode: MapMode }): JSX.Element {
   const pickMode = () => props.mode.mode === "pick" ? props.mode : undefined;
 
@@ -120,10 +230,29 @@ function PickModeContent(props: { mode: MapMode }): JSX.Element {
     return { ...pm.center, zoom: pm.zoom };
   };
 
+  const radiusData = () => {
+    const pm = pickMode();
+    if (!pm?.radiusCenter || !pm.radiusKm) return undefined;
+    return {
+      lat: pm.radiusCenter.lat,
+      long: pm.radiusCenter.long,
+      radiusKm: pm.radiusKm,
+    };
+  };
+
   return (
     <Show when={pickMode()}>
       {(pm) => (
         <>
+          <Show when={radiusData()}>
+            {(r) => (
+              <RadiusCircle
+                lat={r().lat}
+                long={r().long}
+                radiusKm={r().radiusKm}
+              />
+            )}
+          </Show>
           <For each={pm().locations ?? []}>
             {(loc) => (
               <CustomMarker

@@ -6,6 +6,7 @@ import {
 } from "~/client/actions/location-logs.ts";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
+import { haversineDistance, MAX_LOG_RADIUS_KM } from "~/shared/utils/geo.ts";
 import { type Accessor, type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -20,6 +21,8 @@ export type LocationLogFormHandle = {
 
 type LocationLogFormProps = {
   slug: string;
+  parentLat: number;
+  parentLong: number;
   locationLog?: {
     id: number;
     name: string;
@@ -46,8 +49,8 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
     defaultValues: {
       name: props.locationLog?.name ?? "",
       description: (props.locationLog?.description ?? "") as string | null,
-      lat: props.locationLog?.lat ?? 0,
-      long: props.locationLog?.long ?? 0,
+      lat: props.locationLog?.lat ?? (props.pickedLat() ?? 0),
+      long: props.locationLog?.long ?? (props.pickedLong() ?? 0),
       startedAt: props.locationLog?.startedAt ?? "",
       endedAt: props.locationLog?.endedAt ?? "",
     },
@@ -63,6 +66,15 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
       }).refine(
         (v) => !v.startedAt || !v.endedAt || v.startedAt <= v.endedAt,
         { message: "Start date must be before end date", path: ["startedAt"] },
+      ).refine(
+        (v) =>
+          haversineDistance(v.lat, v.long, props.parentLat, props.parentLong) <=
+            MAX_LOG_RADIUS_KM,
+        {
+          message:
+            `Log must be within ${MAX_LOG_RADIUS_KM} km of the parent location`,
+          path: ["lat"],
+        },
       ),
     },
     onSubmit: async ({ value }) => {

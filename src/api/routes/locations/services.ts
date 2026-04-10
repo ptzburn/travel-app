@@ -8,7 +8,7 @@ import type {
   UpdateLocation,
 } from "~/api/types/locations.ts";
 import { NOT_FOUND } from "~/shared/http-status.ts";
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq, like } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { customAlphabet } from "nanoid";
 
@@ -48,10 +48,29 @@ export async function findLocationWithLogs(
   return location;
 }
 
-export async function findLocations(userId: number): Promise<SelectLocation[]> {
-  return await db.query.locations.findMany({
-    where: { userId },
-  });
+export async function findLocations(
+  userId: number,
+  opts?: { search?: string; sortBy?: string; sortDirection?: string },
+): Promise<SelectLocation[]> {
+  const conditions = [eq(locations.userId, userId)];
+  if (opts?.search) {
+    conditions.push(like(locations.name, `%${opts.search}%`));
+  }
+
+  const sortColumn = opts?.sortBy === "name"
+    ? locations.name
+    : opts?.sortBy === "updatedAt"
+    ? locations.updatedAt
+    : locations.createdAt;
+  const direction = opts?.sortDirection === "asc"
+    ? asc(sortColumn)
+    : desc(sortColumn);
+
+  return await db
+    .select()
+    .from(locations)
+    .where(and(...conditions))
+    .orderBy(direction);
 }
 
 export async function findLocationByName(

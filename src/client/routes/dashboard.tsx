@@ -7,6 +7,7 @@ import { clientOnly } from "@solidjs/start";
 import { ErrorBoundaryMessage } from "~/client/components/error-boundary-message.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { SessionProvider } from "~/client/contexts/session-context.tsx";
+import { useMediaQuery } from "~/client/hooks/use-media-query.ts";
 import { getSessionQuery } from "~/client/queries/auth.ts";
 import { ErrorBoundary, type JSX, Show, Suspense } from "solid-js";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar.tsx";
@@ -16,6 +17,9 @@ const AppSidebar = clientOnly(() =>
 );
 const MobileHeader = clientOnly(() =>
   import("../routes/dashboard/_components/mobile-header.tsx")
+);
+const MobileMapSheet = clientOnly(() =>
+  import("~/client/routes/dashboard/_components/mobile-map-sheet.tsx")
 );
 const Map = clientOnly(() =>
   import("~/client/routes/dashboard/_components/map.tsx")
@@ -68,6 +72,9 @@ function isEditRoute(path: string): boolean {
 export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
   const session = createAsync(() => getSessionQuery());
   const location = useLocation();
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const showMobileMap = (): boolean =>
+    isMobile() && showsMap(location.pathname);
 
   return (
     <div class="flex min-h-0 flex-1 flex-col">
@@ -93,28 +100,44 @@ export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
                   <AppSidebar />
                   <SidebarInset class="flex flex-1 flex-col overflow-hidden">
                     <MobileHeader />
-                    <main
-                      class={`container flex min-h-0 flex-1 gap-6 py-4 pb-20 md:py-8 md:pb-8 ${
-                        isEditRoute(location.pathname)
-                          ? "flex-col lg:flex-row"
-                          : "flex-col"
-                      }`}
-                    >
-                      <div class="flex min-h-0 flex-1 flex-col">
-                        {props.children}
-                      </div>
-                      <Show when={showsMap(location.pathname)}>
-                        <div
-                          class={`relative overflow-hidden rounded-lg border ${
+                    <Show
+                      when={showMobileMap()}
+                      fallback={
+                        <main
+                          class={`container flex min-h-0 flex-1 gap-6 py-4 pb-20 md:py-8 md:pb-8 ${
                             isEditRoute(location.pathname)
-                              ? "min-h-[300px] lg:min-h-0 lg:flex-1"
-                              : "min-h-[300px] flex-1 md:min-h-[400px] md:flex-[2]"
+                              ? "flex-col lg:flex-row"
+                              : "flex-col"
                           }`}
                         >
+                          <div class="flex min-h-0 flex-1 flex-col">
+                            {props.children}
+                          </div>
+                          <Show when={showsMap(location.pathname)}>
+                            <div
+                              class={`relative overflow-hidden rounded-lg border ${
+                                isEditRoute(location.pathname)
+                                  ? "min-h-[300px] lg:min-h-0 lg:flex-1"
+                                  : "min-h-[300px] flex-1 md:min-h-[400px] md:flex-[1.5]"
+                              }`}
+                            >
+                              <Map />
+                            </div>
+                          </Show>
+                        </main>
+                      }
+                    >
+                      <div class="relative min-h-0 flex-1">
+                        <div class="absolute inset-0">
                           <Map />
                         </div>
-                      </Show>
-                    </main>
+                        <MobileMapSheet
+                          isEditRoute={isEditRoute(location.pathname)}
+                        >
+                          {props.children}
+                        </MobileMapSheet>
+                      </div>
+                    </Show>
                   </SidebarInset>
                 </SidebarProvider>
               </SessionProvider>

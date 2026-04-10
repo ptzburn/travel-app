@@ -10,7 +10,9 @@ import {
   type SearchResult,
 } from "~/client/routes/dashboard/locations/_components/location-search.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import { haversineDistance, MAX_LOG_RADIUS_KM } from "~/shared/utils/geo.ts";
 import { createEffect, createSignal, type JSX, onCleanup } from "solid-js";
+import { toast } from "solid-sonner";
 
 export default function AddLocationLogPage(): JSX.Element {
   const params = useParams<{ slug: string }>();
@@ -24,7 +26,22 @@ export default function AddLocationLogPage(): JSX.Element {
 
   let formHandle: LocationLogFormHandle | undefined;
 
+  const isWithinRadius = (lat: number, long: number): boolean => {
+    const parent = parentLocation();
+    if (!parent) return true;
+    return (
+      haversineDistance(lat, long, parent.lat, parent.long) <=
+        MAX_LOG_RADIUS_KM
+    );
+  };
+
   const handlePick = (lat: number, long: number): void => {
+    if (!isWithinRadius(lat, long)) {
+      toast.error(
+        `Location must be within ${MAX_LOG_RADIUS_KM} km of the parent location`,
+      );
+      return;
+    }
     setPickedLat(lat);
     setPickedLong(long);
     formHandle?.setCoordinates(lat, long);
@@ -35,6 +52,7 @@ export default function AddLocationLogPage(): JSX.Element {
     if (parent && pickedLat() === null) {
       setPickedLat(parent.lat);
       setPickedLong(parent.long);
+      formHandle?.setCoordinates(parent.lat, parent.long);
     }
   });
 
@@ -56,6 +74,10 @@ export default function AddLocationLogPage(): JSX.Element {
         long: log.long,
         href: `/dashboard/locations/${params.slug}/${log.id}`,
       })),
+      ...(parent && {
+        radiusCenter: { lat: parent.lat, long: parent.long },
+        radiusKm: MAX_LOG_RADIUS_KM,
+      }),
     });
   });
 
@@ -73,6 +95,18 @@ export default function AddLocationLogPage(): JSX.Element {
     pickedLat() !== null && pickedLong() !== null;
 
   const handleSearchSelect = (result: SearchResult): void => {
+    if (!isWithinRadius(result.lat, result.long)) {
+      const parent = parentLocation();
+      const distance = parent
+        ? Math.round(
+          haversineDistance(result.lat, result.long, parent.lat, parent.long),
+        )
+        : 0;
+      toast.error(
+        `Selected location is too far from the parent (${distance} km away, max ${MAX_LOG_RADIUS_KM} km)`,
+      );
+      return;
+    }
     handlePick(result.lat, result.long);
     if (!formHandle?.getName()) {
       formHandle?.setName(result.name || result.displayName);
@@ -90,6 +124,8 @@ export default function AddLocationLogPage(): JSX.Element {
           <LocationSearch onSelect={handleSearchSelect} />
           <LocationLogForm
             slug={params.slug}
+            parentLat={parentLocation()?.lat ?? 0}
+            parentLong={parentLocation()?.long ?? 0}
             pickedLat={pickedLat}
             pickedLong={pickedLong}
             hasCoordinates={hasCoordinates}

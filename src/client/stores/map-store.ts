@@ -23,6 +23,8 @@ interface PickMode {
   center?: { lat: number; long: number };
   zoom?: number;
   locations?: MapLocation[];
+  radiusCenter?: { lat: number; long: number };
+  radiusKm?: number;
 }
 
 export type MapMode = ViewMode | PickMode;

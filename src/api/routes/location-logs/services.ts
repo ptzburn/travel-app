@@ -3,9 +3,27 @@ import { locationLogs } from "~/api/db/schema/location-logs.ts";
 import type { SelectLocationLogImage } from "~/api/types/location-log-images.ts";
 import type { SelectLocationLog } from "~/api/types/location-logs.ts";
 import type { InsertLocationLog } from "~/api/types/location-logs.ts";
-import { NOT_FOUND } from "~/shared/http-status.ts";
+import { NOT_FOUND, UNPROCESSABLE_ENTITY } from "~/shared/http-status.ts";
+import { haversineDistance, MAX_LOG_RADIUS_KM } from "~/shared/utils/geo.ts";
 import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+
+export function assertWithinRadius(
+  logLat: number,
+  logLong: number,
+  parentLat: number,
+  parentLong: number,
+): void {
+  const distance = haversineDistance(logLat, logLong, parentLat, parentLong);
+  if (distance > MAX_LOG_RADIUS_KM) {
+    throw new HTTPException(UNPROCESSABLE_ENTITY.CODE, {
+      message:
+        `Location log must be within ${MAX_LOG_RADIUS_KM} km of the parent location (current distance: ${
+          Math.round(distance)
+        } km)`,
+    });
+  }
+}
 
 export async function findLocationLog(
   id: number,
