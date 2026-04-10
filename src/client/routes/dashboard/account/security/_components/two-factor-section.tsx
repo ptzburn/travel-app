@@ -18,6 +18,7 @@ import {
   getSessionQuery,
   viewNumberOfBackupCodesQuery,
 } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import {
   createSignal,
   ErrorBoundary,
@@ -58,7 +59,7 @@ export function TwoFactorSection(): JSX.Element {
       fetchOptions: {
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "Failed to enable two-factor authentication",
+            ctx.error.message || m.security_2fa_enable_failed(),
           );
         },
       },
@@ -77,7 +78,7 @@ export function TwoFactorSection(): JSX.Element {
       fetchOptions: {
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "Failed to verify two-factor authentication",
+            ctx.error.message || m.security_2fa_verify_failed(),
           );
         },
         onSuccess: () => {
@@ -97,7 +98,7 @@ export function TwoFactorSection(): JSX.Element {
 
   function handleEnableDialogClose(open: boolean): void {
     if (!open && enableStep() === "backup-codes") {
-      toast.success("Two-factor authentication enabled");
+      toast.success(m.security_2fa_enabled_toast());
     }
     setEnableOpen(open);
   }
@@ -107,22 +108,22 @@ export function TwoFactorSection(): JSX.Element {
       <Item>
         <ItemContent>
           <ItemTitle>
-            Two-factor authentication
+            {m.security_2fa_title()}
             <Show
               when={session.user.twoFactorEnabled}
               fallback={
                 <Badge variant="error" round>
-                  Disabled
+                  {m.security_2fa_disabled()}
                 </Badge>
               }
             >
               <Badge variant="success" round>
-                Enabled
+                {m.security_2fa_enabled()}
               </Badge>
             </Show>
           </ItemTitle>
           <ItemDescription>
-            Add an extra layer of security with an authenticator app
+            {m.security_2fa_description()}
           </ItemDescription>
         </ItemContent>
         <ItemActions>
@@ -130,7 +131,7 @@ export function TwoFactorSection(): JSX.Element {
             when={session.user.twoFactorEnabled}
             fallback={
               <Button variant="outline" size="sm" onClick={handleEnableOpen}>
-                Enable
+                {m.security_2fa_enable()}
               </Button>
             }
           >
@@ -139,7 +140,7 @@ export function TwoFactorSection(): JSX.Element {
               size="sm"
               onClick={() => setDisableOpen(true)}
             >
-              Disable
+              {m.security_2fa_disable()}
             </Button>
           </Show>
         </ItemActions>
@@ -149,16 +150,16 @@ export function TwoFactorSection(): JSX.Element {
         <ItemSeparator />
         <Item size="sm">
           <ItemContent>
-            <ItemTitle>Backup codes</ItemTitle>
+            <ItemTitle>{m.security_backup_codes()}</ItemTitle>
             <ItemDescription>
               <ErrorBoundary
                 fallback={null}
               >
                 <Suspense fallback={<Skeleton class="h-4 w-16" />}>
                   <Show when={numberOfBackupCodes()}>
-                    {numberOfBackupCodes()}{" "}
-                    backup codes remaining. Regenerate if you've lost or used
-                    your existing codes.
+                    {m.security_backup_codes_remaining({
+                      count: String(numberOfBackupCodes()),
+                    })}
                   </Show>
                 </Suspense>
               </ErrorBoundary>
@@ -170,7 +171,7 @@ export function TwoFactorSection(): JSX.Element {
               size="sm"
               onClick={() => setRegenerateOpen(true)}
             >
-              Regenerate
+              {m.security_regenerate()}
             </Button>
           </ItemActions>
         </Item>
@@ -180,19 +181,19 @@ export function TwoFactorSection(): JSX.Element {
         isOpen={enableOpen}
         setIsOpen={handleEnableDialogClose}
         title={enableStep() === "backup-codes"
-          ? "Save backup codes"
-          : "Enable two-factor authentication"}
+          ? m.security_save_backup_codes()
+          : m.security_2fa_enable_title()}
         description={enableStep() === "password"
-          ? "Enter your password to enable two-factor authentication"
+          ? m.security_2fa_enable_password_description()
           : enableStep() === "verify"
-          ? "Scan the QR code with your authenticator app, then enter the verification code"
-          : "Store these codes in a safe place. You can use them to access your account if you lose your authenticator device."}
+          ? m.security_2fa_enable_verify_description()
+          : m.security_backup_codes_store()}
       >
         {() => (
           <Switch>
             <Match when={enableStep() === "password"}>
               <PasswordForm
-                submitLabel="Continue"
+                submitLabel={m.security_continue()}
                 onSubmit={handlePasswordSubmit}
               />
             </Match>

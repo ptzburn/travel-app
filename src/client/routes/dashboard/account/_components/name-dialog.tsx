@@ -5,6 +5,7 @@ import { Button } from "~/client/components/ui/button.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { getSessionQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -48,10 +49,10 @@ export function NameEditDialog(props: NameEditDialogProps): JSX.Element {
             formApi.reset();
             setOpen(false);
             revalidate(getSessionQuery.key);
-            toast.success("Name updated");
+            toast.success(m.account_name_updated());
           },
           onError: (error) => {
-            toast.error(error.error.message || "Failed to update name");
+            toast.error(error.error.message || m.account_name_update_failed());
           },
         },
       );
@@ -65,13 +66,13 @@ export function NameEditDialog(props: NameEditDialogProps): JSX.Element {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        Edit name
+        {m.account_edit_name()}
       </Button>
 
       <ResponsiveEditDialog
         isOpen={open}
         setIsOpen={setOpen}
-        title="Edit name"
+        title={m.account_edit_name()}
       >
         {() => (
           <form
@@ -86,22 +87,22 @@ export function NameEditDialog(props: NameEditDialogProps): JSX.Element {
               <form.AppField name="firstName">
                 {(field) => (
                   <field.TextField
-                    label="First name"
-                    placeholder="First name"
+                    label={m.account_first_name()}
+                    placeholder={m.account_first_name()}
                   />
                 )}
               </form.AppField>
               <form.AppField name="lastName">
                 {(field) => (
                   <field.TextField
-                    label="Last name"
-                    placeholder="Last name"
+                    label={m.account_last_name()}
+                    placeholder={m.account_last_name()}
                   />
                 )}
               </form.AppField>
             </div>
             <form.AppForm>
-              <form.SubmitButton>Save</form.SubmitButton>
+              <form.SubmitButton>{m.common_save()}</form.SubmitButton>
             </form.AppForm>
           </form>
         )}

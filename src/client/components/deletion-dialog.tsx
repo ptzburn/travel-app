@@ -1,4 +1,5 @@
 import { useMediaQuery } from "~/client/hooks/use-media-query.ts";
+import * as m from "~/paraglide/messages.js";
 import Trash from "~icons/lucide/trash";
 import { type Accessor, type JSX, type Setter, Show } from "solid-js";
 import { Button } from "./ui/button.tsx";
@@ -35,10 +36,9 @@ type DeletionDialogProps = {
 export function DeletionDialog(props: DeletionDialogProps): JSX.Element {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const defaultTitle = "Are you sure?";
-  const defaultDescription =
-    "This action cannot be undone. This will permanently delete your data.";
-  const defaultButtonText = "Delete";
+  const defaultTitle = m.dialog_delete_title();
+  const defaultDescription = m.dialog_delete_description();
+  const defaultButtonText = m.common_delete();
 
   const ActionButtons = () => (
     <>
@@ -47,7 +47,7 @@ export function DeletionDialog(props: DeletionDialogProps): JSX.Element {
         disabled={props.isPending}
         onClick={() => props.setIsOpen(false)}
       >
-        Cancel
+        {m.common_cancel()}
       </Button>
       <Button
         variant="destructive"

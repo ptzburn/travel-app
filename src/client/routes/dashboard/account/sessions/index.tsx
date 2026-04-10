@@ -16,6 +16,8 @@ import {
 import { useSession } from "~/client/contexts/session-context.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { listSessionsQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
+import { getLocale } from "~/paraglide/runtime.js";
 import Monitor from "~icons/lucide/monitor";
 import Smartphone from "~icons/lucide/smartphone";
 import Tablet from "~icons/lucide/tablet";
@@ -35,16 +37,20 @@ function parseUserAgent(
   ua?: string | null,
 ): { browser: string; os: string; device: "mobile" | "tablet" | "desktop" } {
   if (!ua) {
-    return { browser: "Unknown", os: "Unknown", device: "desktop" as const };
+    return {
+      browser: m.sessions_unknown(),
+      os: m.sessions_unknown(),
+      device: "desktop" as const,
+    };
   }
 
-  let browser = "Unknown";
+  let browser: string = m.sessions_unknown();
   if (ua.includes("Firefox")) browser = "Firefox";
   else if (ua.includes("Edg/")) browser = "Edge";
   else if (ua.includes("Chrome")) browser = "Chrome";
   else if (ua.includes("Safari")) browser = "Safari";
 
-  let os = "Unknown";
+  let os: string = m.sessions_unknown();
   if (ua.includes("Windows")) os = "Windows";
   else if (ua.includes("Mac OS")) os = "macOS";
   else if (ua.includes("Linux")) os = "Linux";
@@ -80,7 +86,7 @@ function formatDate(
   date: Date | string | null | undefined,
 ): string {
   if (!date) return "—";
-  return new Date(date).toLocaleDateString("fi-FI", {
+  return new Date(date).toLocaleDateString(getLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -107,10 +113,10 @@ export default function SessionsRoute(): JSX.Element {
       fetchOptions: {
         onSuccess: () => {
           revalidate(listSessionsQuery.key);
-          toast.success("Session revoked successfully");
+          toast.success(m.sessions_revoked());
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || "Failed to revoke session");
+          toast.error(ctx.error.message || m.sessions_revoke_failed());
         },
       },
     });
@@ -124,10 +130,10 @@ export default function SessionsRoute(): JSX.Element {
       fetchOptions: {
         onSuccess: () => {
           revalidate(listSessionsQuery.key);
-          toast.success("All other sessions have been revoked");
+          toast.success(m.sessions_revoke_all_success());
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || "Failed to revoke sessions");
+          toast.error(ctx.error.message || m.sessions_revoke_all_failed());
         },
       },
     });
@@ -137,9 +143,9 @@ export default function SessionsRoute(): JSX.Element {
   return (
     <div class="flex flex-1 flex-col gap-4">
       <div>
-        <h2>Sessions</h2>
+        <h2>{m.sessions_title()}</h2>
         <p class="text-muted-foreground">
-          Manage your active sessions.
+          {m.sessions_subtitle()}
         </p>
       </div>
 
@@ -158,16 +164,16 @@ export default function SessionsRoute(): JSX.Element {
               <TableHeader>
                 <TableRow>
                   <TableHead class="text text-text">
-                    Device
+                    {m.sessions_device()}
                   </TableHead>
                   <TableHead class="hidden text-text sm:table-cell">
-                    IP Address
+                    {m.sessions_ip_address()}
                   </TableHead>
                   <TableHead class="hidden text-text md:table-cell">
-                    Signed in
+                    {m.sessions_signed_in()}
                   </TableHead>
                   <TableHead class="text-text">
-                    Expires
+                    {m.sessions_expires()}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -182,7 +188,7 @@ export default function SessionsRoute(): JSX.Element {
                             colSpan={5}
                             class="py-8 text-center text-muted-foreground"
                           >
-                            No active sessions found
+                            {m.sessions_empty()}
                           </TableCell>
                         </TableRow>
                       }
@@ -211,7 +217,7 @@ export default function SessionsRoute(): JSX.Element {
                                           variant="success"
                                           class="px-1.5 py-0 text-[10px]"
                                         >
-                                          Current
+                                          {m.sessions_current()}
                                         </Badge>
                                       </Show>
                                     </div>
@@ -250,7 +256,7 @@ export default function SessionsRoute(): JSX.Element {
                                       <Spinner class="size-4" />
                                     </Show>
                                     <span class="ml-1 hidden sm:inline">
-                                      Revoke
+                                      {m.sessions_revoke()}
                                     </span>
                                   </Button>
                                 </Show>
@@ -276,7 +282,7 @@ export default function SessionsRoute(): JSX.Element {
               <Show when={revokingAll()}>
                 <Spinner class="size-4" />
               </Show>
-              Revoke all other sessions
+              {m.sessions_revoke_all()}
             </Button>
           </Show>
         </Suspense>
@@ -286,10 +292,10 @@ export default function SessionsRoute(): JSX.Element {
         open={revokeAllOpen}
         onOpenChange={setRevokeAllOpen}
         onConfirm={handleRevokeAll}
-        title="Revoke all other sessions?"
-        description="This will sign out all devices except the current one. This action cannot be undone."
-        confirmText="Revoke all"
-        cancelText="Cancel"
+        title={m.sessions_revoke_all_title()}
+        description={m.sessions_revoke_all_description()}
+        confirmText={m.sessions_revoke_all_confirm()}
+        cancelText={m.common_cancel()}
       />
 
       <ConfirmationDialog
@@ -299,10 +305,10 @@ export default function SessionsRoute(): JSX.Element {
           if (!open) setRevokingToken(null);
         }}
         onConfirm={handleRevoke}
-        title="Revoke session?"
-        description="This will sign out the device associated with this session. This action cannot be undone."
-        confirmText="Revoke"
-        cancelText="Cancel"
+        title={m.sessions_revoke_title()}
+        description={m.sessions_revoke_description()}
+        confirmText={m.sessions_revoke()}
+        cancelText={m.common_cancel()}
       />
     </div>
   );

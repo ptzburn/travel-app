@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "~/client/components/ui/tooltip.tsx";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
+import * as m from "~/paraglide/messages.js";
 import TablerMapPinFilled from "~icons/tabler/map-pin-filled";
 import { Marker as MaplibreMarker, Popup } from "maplibre-gl";
 import {
@@ -143,7 +144,7 @@ export default function CustomMarker(props: {
           </Show>
           <div class="mt-1 flex justify-end">
             <Button variant="outline" size="sm" onClick={() => navigate(href)}>
-              View
+              {m.common_view()}
             </Button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import {
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
+import * as m from "~/paraglide/messages.js";
 import { type Accessor, type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -50,7 +51,7 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: z.object({
-        name: z.string().min(1, "Name is required").max(100),
+        name: z.string().min(1, m.locations_name_required()).max(100),
         description: z.string().max(1000).or(z.null()),
         lat: z.number().min(-90).max(90),
         long: z.number().min(-180).max(180),
@@ -65,10 +66,10 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
         if (props.location) {
           await updateAction(props.location.slug, data);
           await revalidate(getLocationBySlugQuery.key);
-          toast.success("Location updated");
+          toast.success(m.locations_updated());
         } else {
           await addAction(data);
-          toast.success("Location added");
+          toast.success(m.locations_added());
         }
         await revalidate(getLocationsQuery.key);
         form.reset();
@@ -105,8 +106,8 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
       <form.AppField name="name">
         {(field) => (
           <field.TextField
-            label="Name"
-            placeholder="Location name"
+            label={m.locations_name_label()}
+            placeholder={m.locations_name_placeholder()}
           />
         )}
       </form.AppField>
@@ -114,8 +115,8 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
       <form.AppField name="description">
         {(field) => (
           <field.TextareaField
-            label="Description"
-            placeholder="Optional description"
+            label={m.locations_description_label()}
+            placeholder={m.locations_description_placeholder()}
             rows={3}
           />
         )}
@@ -123,14 +124,15 @@ export function LocationForm(props: LocationFormProps): JSX.Element {
 
       <Show when={props.hasCoordinates()}>
         <p class="text-muted-foreground text-sm tabular-nums">
-          Current coordinates: {props.pickedLat()?.toFixed(6)},{" "}
+          {m.locations_current_coordinates()} {props.pickedLat()?.toFixed(6)},
+          {" "}
           {props.pickedLong()?.toFixed(6)}
         </p>
       </Show>
 
       <form.AppForm>
         <form.SubmitButton disabled={!props.hasCoordinates()}>
-          {isEdit ? "Save Changes" : "Add Location"}
+          {isEdit ? m.locations_save_changes() : m.locations_add()}
         </form.SubmitButton>
       </form.AppForm>
     </form>

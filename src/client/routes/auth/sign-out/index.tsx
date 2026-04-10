@@ -2,6 +2,7 @@ import { useNavigate } from "@solidjs/router";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX, onMount, Show } from "solid-js";
 import { toast } from "solid-sonner";
 
@@ -36,10 +37,10 @@ function SignOutPage(): JSX.Element {
           <Spinner class="size-10" />
           <div>
             <h1 class="font-bold text-2xl">
-              Signing out...
+              {m.auth_signing_out()}
             </h1>
             <p class="text-balance text-muted-foreground text-sm">
-              Please wait while we sign you out...
+              {m.auth_signing_out_description()}
             </p>
           </div>
         </div>

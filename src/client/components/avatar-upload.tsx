@@ -7,10 +7,11 @@ import {
   AvatarImage,
 } from "~/client/components/ui/avatar.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
-
 import { Spinner } from "~/client/components/ui/spinner.tsx";
+
 import { getFileUrl, getInitials } from "~/client/lib/utils.ts";
 import { getSessionQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import Pencil from "~icons/lucide/pencil";
 import { type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
@@ -36,7 +37,7 @@ export function AvatarUpload(props: AvatarUploadProps): JSX.Element {
       if (!uploadFile) return;
       const { file } = uploadFile;
       if (file.size > 10 * 1024 * 1024) {
-        toast.error("Image is too large (max 10MB)");
+        toast.error(m.avatar_upload_too_large());
         clearFiles();
         return;
       }
@@ -73,13 +74,11 @@ export function AvatarUpload(props: AvatarUploadProps): JSX.Element {
 
       await uploadImage(formData);
       revalidate(getSessionQuery.key);
-      toast.success("Profile picture updated");
+      toast.success(m.avatar_upload_success());
       clearFiles();
     } catch (error) {
       toast.error(
-        Error.isError(error)
-          ? error.message
-          : "Failed to update profile picture",
+        Error.isError(error) ? error.message : m.avatar_upload_failed(),
       );
       clearFiles();
     }
@@ -98,7 +97,7 @@ export function AvatarUpload(props: AvatarUploadProps): JSX.Element {
       >
         <AvatarImage
           src={getFileUrl(props.imageUrl) ?? undefined}
-          alt={`${props.userName}'s avatar`}
+          alt={m.a11y_avatar({ name: props.userName })}
           class="object-cover"
         />
         <AvatarFallback class="bg-primary/10 font-bold text-primary">

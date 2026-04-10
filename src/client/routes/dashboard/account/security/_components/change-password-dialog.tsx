@@ -4,6 +4,7 @@ import { Button } from "~/client/components/ui/button.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -24,23 +25,23 @@ export function ChangePasswordDialog(): JSX.Element {
           currentPassword: z.string().min(1),
           newPassword: z.string().min(
             8,
-            "Password must be at least 8 characters long",
+            m.security_password_min_length(),
           ),
           confirmPassword: z.string().min(
             8,
-            "Password must be at least 8 characters long",
+            m.security_password_min_length(),
           ),
         })
         .superRefine((data, ctx) => {
           if (data.newPassword !== data.confirmPassword) {
             ctx.addIssue({
               code: "custom",
-              message: "Passwords do not match",
+              message: m.auth_passwords_no_match(),
               path: ["newPassword"],
             });
             ctx.addIssue({
               code: "custom",
-              message: "Passwords do not match",
+              message: m.auth_passwords_no_match(),
               path: ["confirmPassword"],
             });
           }
@@ -57,11 +58,11 @@ export function ChangePasswordDialog(): JSX.Element {
           onSuccess: () => {
             formApi.reset();
             setOpen(false);
-            toast.success("Password changed successfully");
+            toast.success(m.security_password_changed());
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "Failed to change password",
+              error.error.message || m.security_password_change_failed(),
             );
           },
         },
@@ -76,14 +77,14 @@ export function ChangePasswordDialog(): JSX.Element {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        Change password
+        {m.security_change_password()}
       </Button>
 
       <ResponsiveEditDialog
         isOpen={open}
         setIsOpen={setOpen}
-        title="Change password"
-        description="Update your account password"
+        title={m.security_change_password()}
+        description={m.security_change_password_description()}
       >
         {() => (
           <form
@@ -97,32 +98,34 @@ export function ChangePasswordDialog(): JSX.Element {
             <form.AppField name="currentPassword">
               {(field) => (
                 <field.TextField
-                  label="Current password"
+                  label={m.security_current_password_label()}
                   type="password"
-                  placeholder="Enter your current password"
+                  placeholder={m.security_current_password_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppField name="newPassword">
               {(field) => (
                 <field.TextField
-                  label="New password"
+                  label={m.security_new_password_label()}
                   type="password"
-                  placeholder="Enter your new password"
+                  placeholder={m.security_new_password_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppField name="confirmPassword">
               {(field) => (
                 <field.TextField
-                  label="Confirm password"
+                  label={m.security_confirm_password_label()}
                   type="password"
-                  placeholder="Re-enter your new password"
+                  placeholder={m.security_confirm_password_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppForm>
-              <form.SubmitButton>Change password</form.SubmitButton>
+              <form.SubmitButton>
+                {m.security_change_password()}
+              </form.SubmitButton>
             </form.AppForm>
           </form>
         )}

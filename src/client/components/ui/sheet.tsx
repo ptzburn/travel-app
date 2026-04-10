@@ -1,7 +1,8 @@
 import * as SheetPrimitive from "@kobalte/core/dialog";
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
-
 import { cn } from "~/client/lib/utils.ts";
+
+import * as m from "~/paraglide/messages.js";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 
@@ -119,7 +120,7 @@ const SheetContent = <T extends ValidComponent = "div">(
             <path d="M18 6l-12 12" />
             <path d="M6 6l12 12" />
           </svg>
-          <span class="sr-only">Close</span>
+          <span class="sr-only">{m.a11y_close()}</span>
         </SheetPrimitive.CloseButton>
       </SheetPrimitive.Content>
     </SheetPortal>

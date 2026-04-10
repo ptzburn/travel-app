@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "~/client/components/ui/dropdown-menu.tsx";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
+import * as m from "~/paraglide/messages.js";
 import EllipsisVertical from "~icons/lucide/ellipsis-vertical";
 import Pencil from "~icons/lucide/pencil";
 import Trash from "~icons/lucide/trash";
@@ -33,7 +34,7 @@ export function LocationActions(props: LocationActionsProps): JSX.Element {
     try {
       await deleteAction(props.slug);
       await revalidate(getLocationsQuery.key);
-      toast.success("Location deleted");
+      toast.success(m.locations_deleted());
       setIsDeleteOpen(false);
       if (props.onDeleted) {
         props.onDeleted();
@@ -67,11 +68,11 @@ export function LocationActions(props: LocationActionsProps): JSX.Element {
             href={`/dashboard/locations/${props.slug}/edit`}
           >
             <Pencil class="size-4" />
-            Edit
+            {m.common_edit()}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsDeleteOpen(true)}>
             <Trash class="size-4" />
-            Delete
+            {m.common_delete()}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -80,8 +81,8 @@ export function LocationActions(props: LocationActionsProps): JSX.Element {
         isOpen={isDeleteOpen}
         setIsOpen={setIsDeleteOpen}
         isPending={isDeleting()}
-        title="Delete location?"
-        description={`This will permanently delete "${props.name}" and all its data.`}
+        title={m.locations_delete_title()}
+        description={m.locations_delete_description({ name: props.name })}
         onDelete={handleDelete}
       />
     </>

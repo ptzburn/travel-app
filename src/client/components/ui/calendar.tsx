@@ -12,6 +12,7 @@ import CalendarPrimitive, {
 } from "@corvu/calendar";
 import { buttonVariants } from "~/client/components/ui/button.tsx";
 import { cn } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 import type { Component, ComponentProps, JSX } from "solid-js";
 import { Show, splitProps, type ValidComponent } from "solid-js";
 
@@ -47,7 +48,7 @@ const CalendarPrevTrigger = <T extends ValidComponent = "button">(
   return (
     <CalendarPrimitive.Nav
       action="prev-month"
-      aria-label="Go to previous month"
+      aria-label={m.a11y_previous_month()}
       class={cn(
         buttonVariants({ variant: "outline" }),
         "size-7 bg-transparent p-0 opacity-50 hover:opacity-100",
@@ -88,7 +89,7 @@ const CalendarNextTrigger = <T extends ValidComponent = "button">(
   return (
     <CalendarPrimitive.Nav
       action="next-month"
-      aria-label="Go to next month"
+      aria-label={m.a11y_next_month()}
       class={cn(
         buttonVariants({ variant: "outline" }),
         "size-7 bg-transparent p-0 opacity-50 hover:opacity-100",

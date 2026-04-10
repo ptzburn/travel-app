@@ -9,6 +9,7 @@ import {
   ItemTitle,
 } from "~/client/components/ui/item.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import Mail from "~icons/lucide/mail";
 import { createSignal, type JSX } from "solid-js";
 import { toast } from "solid-sonner";
@@ -24,7 +25,7 @@ function AccountDataPage(): JSX.Element {
         setIsOpen(false);
       },
       onError: (error) => {
-        toast.error(error.error.message || "Failed to delete account");
+        toast.error(error.error.message || m.account_delete_failed());
       },
     });
     setIsAccountDeleting(false);
@@ -33,17 +34,17 @@ function AccountDataPage(): JSX.Element {
   return (
     <div class="flex flex-1 flex-col gap-10">
       <div>
-        <h2>Data</h2>
+        <h2>{m.account_data_title()}</h2>
         <p class="text-muted-foreground">
-          Manage your account data.
+          {m.account_data_subtitle()}
         </p>
       </div>
       <ItemGroup class="rounded-lg border bg-card">
         <Item>
           <ItemContent>
-            <ItemTitle>Delete account</ItemTitle>
+            <ItemTitle>{m.account_delete_title()}</ItemTitle>
             <ItemDescription>
-              Permanently delete your account and all associated data.
+              {m.account_delete_description()}
             </ItemDescription>
           </ItemContent>
           <ItemActions>
@@ -53,7 +54,7 @@ function AccountDataPage(): JSX.Element {
               onClick={() => setIsOpen(true)}
               disabled={isAccountDeleting()}
             >
-              Delete account
+              {m.account_delete_button()}
             </Button>
           </ItemActions>
         </Item>
@@ -63,9 +64,9 @@ function AccountDataPage(): JSX.Element {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         isPending={isAccountDeleting()}
-        title="Delete account"
-        description="We will send you an email with a link to delete your account. Clicking the link will permanently delete your account and all associated data. This action cannot be undone."
-        buttonText="Send deletion link"
+        title={m.account_delete_dialog_title()}
+        description={m.account_delete_dialog_description()}
+        buttonText={m.account_delete_dialog_button()}
         icon={<Mail />}
         onDelete={handleAccountDelete}
       />

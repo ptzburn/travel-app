@@ -3,6 +3,7 @@ import { ResponsiveEditDialog } from "~/client/components/responsive-edit-dialog
 import { authClient } from "~/client/lib/auth-client.ts";
 
 import { viewNumberOfBackupCodesQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import {
   type Accessor,
   createSignal,
@@ -37,7 +38,7 @@ export function RegenerateBackupCodesDialog(
         },
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "Failed to regenerate backup codes",
+            ctx.error.message || m.security_regenerate_failed(),
           );
         },
       },
@@ -62,17 +63,17 @@ export function RegenerateBackupCodesDialog(
       isOpen={props.isOpen}
       setIsOpen={handleClose}
       title={step() === "codes"
-        ? "Save your new backup codes"
-        : "Regenerate backup codes"}
+        ? m.security_save_new_codes()
+        : m.security_regenerate_title()}
       description={step() === "codes"
-        ? "Your old codes have been replaced. Store these codes in a safe place."
-        : "Enter your password to regenerate backup codes. This will invalidate your old codes."}
+        ? m.security_new_codes_description()
+        : m.security_regenerate_description()}
     >
       {() => (
         <Switch>
           <Match when={step() === "password"}>
             <PasswordForm
-              submitLabel="Regenerate"
+              submitLabel={m.security_regenerate()}
               onSubmit={handlePasswordSubmit}
             />
           </Match>

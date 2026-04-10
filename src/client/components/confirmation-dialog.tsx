@@ -18,6 +18,7 @@ import {
   DrawerTitle,
 } from "~/client/components/ui/drawer.tsx";
 import { useMediaQuery } from "~/client/hooks/use-media-query.ts";
+import * as m from "~/paraglide/messages.js";
 import { type Accessor, type JSX, type Setter, Show } from "solid-js";
 
 type ConfirmationDialogProps = {
@@ -46,11 +47,10 @@ export function ConfirmationDialog(
     props.onOpenChange(false);
   };
 
-  const defaultTitle = "Discard changes?";
-  const defaultDescription =
-    "You have unsaved changes. Are you sure you want to discard them?";
-  const defaultConfirmText = "Discard";
-  const defaultCancelText = "Continue editing";
+  const defaultTitle = m.dialog_discard_title();
+  const defaultDescription = m.dialog_discard_description();
+  const defaultConfirmText = m.dialog_discard_confirm();
+  const defaultCancelText = m.dialog_discard_cancel();
 
   return (
     <Show

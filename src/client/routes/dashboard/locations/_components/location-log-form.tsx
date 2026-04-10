@@ -6,6 +6,7 @@ import {
 } from "~/client/actions/location-logs.ts";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
+import * as m from "~/paraglide/messages.js";
 import { haversineDistance, MAX_LOG_RADIUS_KM } from "~/shared/utils/geo.ts";
 import { type Accessor, type JSX, Show } from "solid-js";
 import { toast } from "solid-sonner";
@@ -57,22 +58,21 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: z.object({
-        name: z.string().min(1, "Name is required").max(100),
+        name: z.string().min(1, m.logs_name_required()).max(100),
         description: z.string().max(1000).or(z.null()),
         lat: z.number().min(-90).max(90),
         long: z.number().min(-180).max(180),
-        startedAt: z.string().min(1, "Start date is required"),
-        endedAt: z.string().min(1, "End date is required"),
+        startedAt: z.string().min(1, m.logs_start_date_required()),
+        endedAt: z.string().min(1, m.logs_end_date_required()),
       }).refine(
         (v) => !v.startedAt || !v.endedAt || v.startedAt <= v.endedAt,
-        { message: "Start date must be before end date", path: ["startedAt"] },
+        { message: m.logs_start_before_end(), path: ["startedAt"] },
       ).refine(
         (v) =>
           haversineDistance(v.lat, v.long, props.parentLat, props.parentLong) <=
             MAX_LOG_RADIUS_KM,
         {
-          message:
-            `Log must be within ${MAX_LOG_RADIUS_KM} km of the parent location`,
+          message: m.logs_within_radius({ radius: String(MAX_LOG_RADIUS_KM) }),
           path: ["lat"],
         },
       ),
@@ -89,10 +89,10 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
             String(props.locationLog.id),
             data,
           );
-          toast.success("Log updated");
+          toast.success(m.logs_updated());
         } else {
           await addAction(data, props.slug);
-          toast.success("Log added");
+          toast.success(m.logs_added());
         }
         await revalidate(getLocationBySlugQuery.key);
         form.reset();
@@ -127,14 +127,19 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
       <CoordinatesInstruction />
 
       <form.AppField name="name">
-        {(field) => <field.TextField label="Name" placeholder="Log name" />}
+        {(field) => (
+          <field.TextField
+            label={m.logs_name_label()}
+            placeholder={m.logs_name_placeholder()}
+          />
+        )}
       </form.AppField>
 
       <form.AppField name="description">
         {(field) => (
           <field.TextareaField
-            label="Description"
-            placeholder="Optional description"
+            label={m.logs_description_label()}
+            placeholder={m.logs_description_placeholder()}
             rows={3}
           />
         )}
@@ -144,29 +149,33 @@ export function LocationLogForm(props: LocationLogFormProps): JSX.Element {
         <form.AppField name="startedAt">
           {(field) => (
             <field.DatePicker
-              label="Start Date"
-              placeholder="Select start date"
+              label={m.logs_start_date_label()}
+              placeholder={m.logs_start_date_placeholder()}
             />
           )}
         </form.AppField>
 
         <form.AppField name="endedAt">
           {(field) => (
-            <field.DatePicker label="End Date" placeholder="Select end date" />
+            <field.DatePicker
+              label={m.logs_end_date_label()}
+              placeholder={m.logs_end_date_placeholder()}
+            />
           )}
         </form.AppField>
       </div>
 
       <Show when={props.hasCoordinates()}>
         <p class="text-muted-foreground text-sm tabular-nums">
-          Current coordinates: {props.pickedLat()?.toFixed(6)},{" "}
+          {m.locations_current_coordinates()} {props.pickedLat()?.toFixed(6)},
+          {" "}
           {props.pickedLong()?.toFixed(6)}
         </p>
       </Show>
 
       <form.AppForm>
         <form.SubmitButton disabled={!props.hasCoordinates()}>
-          {isEdit ? "Save Changes" : "Add Log"}
+          {isEdit ? m.logs_save_changes() : m.logs_add_short()}
         </form.SubmitButton>
       </form.AppForm>
     </form>

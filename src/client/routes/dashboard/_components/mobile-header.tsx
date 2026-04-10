@@ -7,11 +7,12 @@ export default function MobileHeader(): JSX.Element {
   return (
     <header class="flex h-14 shrink-0 items-center justify-between border-b bg-background px-4 md:hidden">
       <A href="/dashboard" class="flex items-center gap-2">
+        <img src="/icon.png" alt="Carte" class="size-8 rounded-lg" />
         <span
           class="font-semibold text-lg tracking-tight"
           style={{ "letter-spacing": "-0.02em" }}
         >
-          TaskApp
+          Carte
         </span>
       </A>
       <SidebarTrigger>

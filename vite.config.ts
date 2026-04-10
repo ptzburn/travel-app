@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { solidStart } from "@solidjs/start/config";
 import { nitroV2Plugin as nitro } from "@solidjs/vite-plugin-nitro-2";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import deno from "@deno/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import Icons from "unplugin-icons/vite";
@@ -38,6 +39,11 @@ export default defineConfig({
     Icons({
       compiler: "solid",
       autoInstall: true,
+    }),
+    paraglideVitePlugin({
+      project: "./project.inlang",
+      outdir: "./src/paraglide",
+      strategy: ["cookie", "preferredLanguage", "baseLocale"],
     }),
     {
       name: "deno-ssr-stream-fix",

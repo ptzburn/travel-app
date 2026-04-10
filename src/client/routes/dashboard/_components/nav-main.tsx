@@ -6,6 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/client/components/ui/sidebar.tsx";
+import * as m from "~/paraglide/messages.js";
 import ArrowLeftIcon from "~icons/lucide/arrow-left";
 import { type JSX, Show } from "solid-js";
 
@@ -33,9 +34,9 @@ export function NavMain(): JSX.Element {
             <Collapsible>
               <A href={url()}>
                 <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Back">
+                  <SidebarMenuButton tooltip={m.nav_back()}>
                     <ArrowLeftIcon />
-                    <span>Back</span>
+                    <span>{m.nav_back()}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </A>

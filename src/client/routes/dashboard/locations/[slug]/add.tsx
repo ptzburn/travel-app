@@ -10,6 +10,7 @@ import {
   type SearchResult,
 } from "~/client/routes/dashboard/locations/_components/location-search.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import * as m from "~/paraglide/messages.js";
 import { haversineDistance, MAX_LOG_RADIUS_KM } from "~/shared/utils/geo.ts";
 import { createEffect, createSignal, type JSX, onCleanup } from "solid-js";
 import { toast } from "solid-sonner";
@@ -37,9 +38,7 @@ export default function AddLocationLogPage(): JSX.Element {
 
   const handlePick = (lat: number, long: number): void => {
     if (!isWithinRadius(lat, long)) {
-      toast.error(
-        `Location must be within ${MAX_LOG_RADIUS_KM} km of the parent location`,
-      );
+      toast.error(m.logs_too_far({ radius: String(MAX_LOG_RADIUS_KM) }));
       return;
     }
     setPickedLat(lat);
@@ -103,7 +102,10 @@ export default function AddLocationLogPage(): JSX.Element {
         )
         : 0;
       toast.error(
-        `Selected location is too far from the parent (${distance} km away, max ${MAX_LOG_RADIUS_KM} km)`,
+        m.logs_too_far_distance({
+          distance: String(distance),
+          radius: String(MAX_LOG_RADIUS_KM),
+        }),
       );
       return;
     }
@@ -117,7 +119,7 @@ export default function AddLocationLogPage(): JSX.Element {
     <>
       <div class="flex min-h-0 flex-1 flex-col gap-6">
         <div class="flex items-center gap-3">
-          <h2>Add Location Log</h2>
+          <h2>{m.logs_add_title()}</h2>
         </div>
 
         <div class="flex flex-col gap-4">
@@ -143,10 +145,10 @@ export default function AddLocationLogPage(): JSX.Element {
           const retry = pendingNavigation();
           if (retry) retry();
         }}
-        title="Are you sure you want to leave?"
-        description="All unsaved changes will be lost."
-        confirmText="Leave"
-        cancelText="Stay"
+        title={m.locations_leave_title()}
+        description={m.locations_leave_description()}
+        confirmText={m.locations_leave_confirm()}
+        cancelText={m.locations_leave_cancel()}
       />
     </>
   );

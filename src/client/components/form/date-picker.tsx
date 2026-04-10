@@ -32,12 +32,13 @@ import {
   TextFieldLabel,
 } from "~/client/components/ui/text-field.tsx";
 import { useFieldContext } from "~/client/hooks/use-app-form.ts";
+import { getLocale } from "~/paraglide/runtime.js";
 import CalendarIcon from "~icons/lucide/calendar";
 import { Index, type JSX, Show } from "solid-js";
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => ({
   value: i,
-  label: new Date(2000, i).toLocaleDateString("en", { month: "short" }),
+  label: new Date(2000, i).toLocaleDateString(getLocale(), { month: "short" }),
 }));
 
 const currentYear = new Date().getFullYear();
@@ -84,7 +85,7 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
           classList={{ "text-muted-foreground": !field().state.value }}
           disabled={field().form.state.isSubmitting || props.disabled}
         >
-          {dateValue()?.toLocaleDateString("en-GB", {
+          {dateValue()?.toLocaleDateString(getLocale(), {
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -177,7 +178,7 @@ export function DatePicker(props: DatePickerProps): JSX.Element {
                       <Index each={api.weekdays}>
                         {(weekDay) => (
                           <CalendarGridHeadCell>
-                            {weekDay().toLocaleDateString("en", {
+                            {weekDay().toLocaleDateString(getLocale(), {
                               weekday: "short",
                             })}
                           </CalendarGridHeadCell>

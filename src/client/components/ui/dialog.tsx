@@ -1,7 +1,8 @@
 import * as DialogPrimitive from "@kobalte/core/dialog";
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
-
 import { cn } from "~/client/lib/utils.ts";
+
+import * as m from "~/paraglide/messages.js";
 import XIcon from "~icons/lucide/x";
 
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
@@ -67,7 +68,7 @@ const DialogContent = <T extends ValidComponent = "div">(
         {props.children}
         <DialogPrimitive.CloseButton class="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:cursor-pointer hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:pointer-events-none data-[expanded]:bg-accent data-[expanded]:text-muted-foreground">
           <XIcon />
-          <span class="sr-only">Close</span>
+          <span class="sr-only">{m.a11y_close()}</span>
         </DialogPrimitive.CloseButton>
       </DialogPrimitive.Content>
     </DialogPortal>

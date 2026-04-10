@@ -5,6 +5,7 @@ import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 import type { Step } from "~/client/routes/auth/sign-up/index.tsx";
+import * as m from "~/paraglide/messages.js";
 import Fa7BrandsGitHub from "~icons/fa7-brands/github";
 import Fa7BrandsGoogle from "~icons/fa7-brands/google";
 import { createSignal, type JSX, Match, type Setter, Switch } from "solid-js";
@@ -46,7 +47,7 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
         onError: (error) => {
           navigate("/auth/sign-up");
           toast.error(
-            error.error.message || "An error occurred",
+            error.error.message || m.auth_error_generic(),
           );
         },
       },
@@ -66,7 +67,7 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
         onError: (error) => {
           navigate("/auth/sign-up");
           toast.error(
-            error.error.message || "An error occurred",
+            error.error.message || m.auth_error_generic(),
           );
         },
       },
@@ -77,7 +78,7 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
   return (
     <div class="space-y-8">
       <div class="flex flex-col items-center gap-2 text-center">
-        <h1 class="font-bold text-2xl">Sign Up</h1>
+        <h1 class="font-bold text-2xl">{m.auth_sign_up_title()}</h1>
       </div>
       <div class="grid gap-6">
         <Button
@@ -95,7 +96,7 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
               <Fa7BrandsGitHub class="size-5" />
             </Match>
           </Switch>
-          Sign up with GitHub
+          {m.auth_sign_up_github()}
         </Button>
         <Button
           variant="outline"
@@ -112,7 +113,7 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
               <Fa7BrandsGoogle class="size-5" />
             </Match>
           </Switch>
-          Sign up with Google
+          {m.auth_sign_up_google()}
         </Button>
         <Separator />
       </div>
@@ -129,25 +130,25 @@ export function EmailInput(props: EmailInputProps): JSX.Element {
             {(field) => (
               <field.TextField
                 type="email"
-                label="Email"
-                placeholder="johndoe@example.com"
+                label={m.auth_email_label()}
+                placeholder={m.auth_email_placeholder()}
               />
             )}
           </emailForm.AppField>
           <emailForm.AppForm>
             <emailForm.SubmitButton>
-              Continue
+              {m.auth_continue()}
             </emailForm.SubmitButton>
           </emailForm.AppForm>
         </div>
       </form>
       <div class="text-center text-sm">
-        Already have an account?{" "}
+        {m.auth_have_account()}{" "}
         <A
           href="/auth/sign-in"
           class="underline underline-offset-4"
         >
-          Sign in
+          {m.auth_sign_in_link()}
         </A>
       </div>
     </div>

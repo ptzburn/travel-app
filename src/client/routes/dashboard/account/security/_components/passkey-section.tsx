@@ -16,6 +16,8 @@ import { Skeleton } from "~/client/components/ui/skeleton.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { listPasskeysQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
+import { getLocale } from "~/paraglide/runtime.js";
 import Fingerprint from "~icons/lucide/fingerprint-pattern";
 import Trash from "~icons/lucide/trash";
 import {
@@ -41,10 +43,10 @@ export function PasskeySection(): JSX.Element {
       fetchOptions: {
         onSuccess: () => {
           revalidate(listPasskeysQuery.key);
-          toast.success("Passkey added");
+          toast.success(m.security_passkey_added());
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || "Failed to add passkey");
+          toast.error(ctx.error.message || m.security_passkey_add_failed());
         },
       },
     });
@@ -60,12 +62,12 @@ export function PasskeySection(): JSX.Element {
       fetchOptions: {
         onSuccess: () => {
           revalidate(listPasskeysQuery.key);
-          toast.success("Passkey deleted");
+          toast.success(m.security_passkey_deleted());
           setDeleteDialogOpen(false);
           setDeletingId(null);
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || "Failed to delete passkey");
+          toast.error(ctx.error.message || m.security_passkey_delete_failed());
         },
       },
     });
@@ -76,10 +78,9 @@ export function PasskeySection(): JSX.Element {
     <ItemGroup class="rounded-lg border bg-card">
       <Item>
         <ItemContent>
-          <ItemTitle>Passkeys</ItemTitle>
+          <ItemTitle>{m.security_passkeys()}</ItemTitle>
           <ItemDescription>
-            Use biometrics, security keys, or your device to sign in without a
-            password
+            {m.security_passkeys_description()}
           </ItemDescription>
         </ItemContent>
         <ItemActions>
@@ -89,7 +90,7 @@ export function PasskeySection(): JSX.Element {
             onClick={handleAdd}
             disabled={adding()}
           >
-            <Show when={adding()} fallback="Add passkey">
+            <Show when={adding()} fallback={m.security_add_passkey()}>
               <Spinner class="size-4" />
             </Show>
           </Button>
@@ -124,7 +125,7 @@ export function PasskeySection(): JSX.Element {
                       <Item size="sm">
                         <ItemContent>
                           <p class="text-muted-foreground text-sm">
-                            No passkeys registered
+                            {m.security_no_passkeys()}
                           </p>
                         </ItemContent>
                       </Item>
@@ -140,12 +141,14 @@ export function PasskeySection(): JSX.Element {
                           <ItemContent>
                             <ItemTitle>
                               {pk.name ||
-                                `Passkey ${index() + 1}`}
+                                m.security_passkey_name({
+                                  number: String(index() + 1),
+                                })}
                             </ItemTitle>
                             <ItemDescription>
-                              Created on{" "}
+                              {m.security_passkey_created()}{" "}
                               {new Date(pk.createdAt).toLocaleDateString(
-                                "fi-FI",
+                                getLocale(),
                               )}
                             </ItemDescription>
                           </ItemContent>

@@ -5,6 +5,7 @@ import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { capitalize } from "~/client/lib/utils.ts";
 import type { Step } from "~/client/routes/auth/sign-up/index.tsx";
+import * as m from "~/paraglide/messages.js";
 import Mail from "~icons/lucide/mail";
 import { type Accessor, createSignal, type JSX, type Setter } from "solid-js";
 import { toast } from "solid-sonner";
@@ -30,12 +31,12 @@ export function Registration(props: RegistrationProps): JSX.Element {
       if (data.password !== data.confirmPassword) {
         context.addIssue({
           code: "custom",
-          message: "Passwords do not match",
+          message: m.auth_passwords_no_match(),
           path: ["password"],
         });
         context.addIssue({
           code: "custom",
-          message: "Passwords do not match",
+          message: m.auth_passwords_no_match(),
           path: ["confirmPassword"],
         });
       }
@@ -69,7 +70,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "An error occurred",
+              error.error.message || m.auth_error_generic(),
             );
           },
         },
@@ -87,7 +88,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
     >
       <div class="flex flex-col items-center gap-2 text-center">
         <h1 class="font-bold text-2xl">
-          Register
+          {m.auth_register_title()}
         </h1>
         <Badge
           variant="secondary"
@@ -103,7 +104,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
             {(field) => (
               <field.TextField
                 type="text"
-                placeholder="First name"
+                placeholder={m.auth_first_name()}
               />
             )}
           </registrationForm.AppField>
@@ -112,7 +113,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
             {(field) => (
               <field.TextField
                 type="text"
-                placeholder="Last name"
+                placeholder={m.auth_last_name()}
               />
             )}
           </registrationForm.AppField>
@@ -122,7 +123,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
           {(field) => (
             <field.TextField
               type="password"
-              placeholder="Password"
+              placeholder={m.auth_password()}
             />
           )}
         </registrationForm.AppField>
@@ -130,7 +131,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
           {(field) => (
             <field.TextField
               type="password"
-              placeholder="Confirm password"
+              placeholder={m.auth_confirm_password()}
             />
           )}
         </registrationForm.AppField>
@@ -143,7 +144,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
         </div>
         <registrationForm.AppForm>
           <registrationForm.SubmitButton disabled={!turnstileToken()}>
-            Create account
+            {m.auth_create_account()}
           </registrationForm.SubmitButton>
         </registrationForm.AppForm>
         <Button
@@ -155,7 +156,7 @@ export function Registration(props: RegistrationProps): JSX.Element {
           }}
           disabled={registrationForm.state.isSubmitting}
         >
-          Back
+          {m.common_back()}
         </Button>
       </div>
     </form>

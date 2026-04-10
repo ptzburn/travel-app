@@ -12,6 +12,7 @@ import {
 } from "~/client/components/ui/item.tsx";
 import { Skeleton } from "~/client/components/ui/skeleton.tsx";
 import { listAccountsQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import { ErrorBoundary, type JSX, Show, Suspense } from "solid-js";
 import { ChangePasswordDialog } from "./_components/change-password-dialog.tsx";
 import { PasskeySection } from "./_components/passkey-section.tsx";
@@ -56,9 +57,9 @@ export default function SecurityPage(): JSX.Element {
   return (
     <div class="flex flex-1 flex-col gap-10">
       <div>
-        <h2>Security</h2>
+        <h2>{m.security_title()}</h2>
         <p class="text-muted-foreground">
-          Manage your account security settings
+          {m.security_subtitle()}
         </p>
       </div>
 
@@ -75,10 +76,10 @@ export default function SecurityPage(): JSX.Element {
               <Item>
                 <ItemContent>
                   <ItemTitle>
-                    Password sign in
+                    {m.security_password_sign_in()}
                   </ItemTitle>
                   <ItemDescription>
-                    Manage the password for signing in to your account
+                    {m.security_password_description()}
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions>

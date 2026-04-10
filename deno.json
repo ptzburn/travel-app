@@ -11,6 +11,7 @@
     "db-prod:migrate": "deno -A --env-file=.env.prod npm:drizzle-kit@^1.0.0-beta.18-7eb39f0 migrate",
     "db-prod:studio": "deno -A --node-modules-dir --env-file=.env.prod npm:drizzle-kit@^1.0.0-beta.18-7eb39f0 studio --port 8000",
     "check": "deno fmt --ignore=src/api/emails/templates ./src/ && deno lint ./src/ && deno check ./src/",
+    "localize": "deno run -A npm:@inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "generate:email-types": "deno run --allow-read --allow-write src/api/emails/generate-types.ts"
   },
   "lint": {
@@ -58,6 +59,7 @@
     "@iconify-json/lucide": "npm:@iconify-json/lucide@^1.2.98",
     "@iconify-json/simple-icons": "npm:@iconify-json/simple-icons@^1.2.77",
     "@iconify-json/tabler": "npm:@iconify-json/tabler@^1.2.33",
+    "@inlang/paraglide-js": "npm:@inlang/paraglide-js@^2.15.3",
     "@solid-primitives/upload": "npm:@solid-primitives/upload@^0.1.4",
     "@types/slug": "npm:@types/slug@^5.0.9",
     "date-fns": "npm:date-fns@^4.1.0",

@@ -16,6 +16,7 @@ import {
   DrawerTitle,
 } from "~/client/components/ui/drawer.tsx";
 import { useMediaQuery } from "~/client/hooks/use-media-query.ts";
+import * as m from "~/paraglide/messages.js";
 import { type Accessor, type JSX, Show } from "solid-js";
 
 type ResponsiveEditDialogProps = {
@@ -58,7 +59,7 @@ export function ResponsiveEditDialog(
                 as={Button<"button">}
                 variant="outline"
               >
-                Cancel
+                {m.common_cancel()}
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>

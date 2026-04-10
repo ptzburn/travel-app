@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "~/client/components/ui/dropdown-menu.tsx";
 import { getLocationBySlugQuery } from "~/client/queries/locations.ts";
+import * as m from "~/paraglide/messages.js";
 import EllipsisVertical from "~icons/lucide/ellipsis-vertical";
 import Pencil from "~icons/lucide/pencil";
 import Trash from "~icons/lucide/trash";
@@ -35,7 +36,7 @@ export function LocationLogActions(
     try {
       await deleteAction(props.slug, String(props.logId));
       await revalidate(getLocationBySlugQuery.key);
-      toast.success("Log deleted");
+      toast.success(m.logs_deleted());
       setIsDeleteOpen(false);
       props.onDeleted?.();
     } catch (error) {
@@ -65,11 +66,11 @@ export function LocationLogActions(
             href={`/dashboard/locations/${props.slug}/${props.logId}/edit`}
           >
             <Pencil class="size-4" />
-            Edit
+            {m.common_edit()}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsDeleteOpen(true)}>
             <Trash class="size-4" />
-            Delete
+            {m.common_delete()}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -78,8 +79,8 @@ export function LocationLogActions(
         isOpen={isDeleteOpen}
         setIsOpen={setIsDeleteOpen}
         isPending={isDeleting()}
-        title="Delete log?"
-        description={`This will permanently delete "${props.logName}" and all its data.`}
+        title={m.logs_delete_title()}
+        description={m.logs_delete_description({ name: props.logName })}
         onDelete={handleDelete}
       />
     </>

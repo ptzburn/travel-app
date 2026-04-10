@@ -3,6 +3,7 @@ import { ResponsiveEditDialog } from "~/client/components/responsive-edit-dialog
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { getUserByIdQuery } from "~/client/queries/users.ts";
+import * as m from "~/paraglide/messages.js";
 import type { SelectUser } from "~/shared/types/auth.ts";
 import type { Accessor, JSX, Setter } from "solid-js";
 import { toast } from "solid-sonner";
@@ -47,10 +48,10 @@ export function NameDialog(props: NameDialogProps): JSX.Element {
             formApi.reset();
             revalidate(getUserByIdQuery.keyFor(props.user().id));
             props.setIsOpen(false);
-            toast.success("Name updated");
+            toast.success(m.users_name_updated());
           },
           onError: (error) => {
-            toast.error(error.error.message || "Failed to update name");
+            toast.error(error.error.message || m.users_name_update_failed());
           },
         },
       );
@@ -61,7 +62,7 @@ export function NameDialog(props: NameDialogProps): JSX.Element {
     <ResponsiveEditDialog
       isOpen={props.isOpen}
       setIsOpen={props.setIsOpen}
-      title="Edit name"
+      title={m.users_edit_name()}
     >
       {() => (
         <form
@@ -76,22 +77,22 @@ export function NameDialog(props: NameDialogProps): JSX.Element {
             <form.AppField name="firstName">
               {(field) => (
                 <field.TextField
-                  label="First name"
-                  placeholder="First name"
+                  label={m.users_first_name()}
+                  placeholder={m.users_first_name()}
                 />
               )}
             </form.AppField>
             <form.AppField name="lastName">
               {(field) => (
                 <field.TextField
-                  label="Last name"
-                  placeholder="Last name"
+                  label={m.users_last_name()}
+                  placeholder={m.users_last_name()}
                 />
               )}
             </form.AppField>
           </div>
           <form.AppForm>
-            <form.SubmitButton>Save</form.SubmitButton>
+            <form.SubmitButton>{m.common_save()}</form.SubmitButton>
           </form.AppForm>
         </form>
       )}

@@ -12,6 +12,7 @@ import {
   filterAndSortLogs,
   locationLogFilters,
 } from "~/client/stores/location-log-filters.ts";
+import * as m from "~/paraglide/messages.js";
 import NotebookPen from "~icons/lucide/notebook-pen";
 import PlusIcon from "~icons/lucide/plus";
 import { createMemo, For, type JSX, Show, Suspense } from "solid-js";
@@ -34,13 +35,13 @@ export function LocationLogsNav(props: { slug: string }): JSX.Element {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Location Logs</SidebarGroupLabel>
+      <SidebarGroupLabel>{m.nav_location_logs()}</SidebarGroupLabel>
       <SidebarMenu>
         <A href={`/dashboard/locations/${props.slug}/add`}>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Add Location Log">
+            <SidebarMenuButton tooltip={m.nav_add_location_log()}>
               <PlusIcon />
-              <span class="truncate">Add Location Log</span>
+              <span class="truncate">{m.nav_add_location_log()}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </A>

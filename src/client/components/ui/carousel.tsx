@@ -1,8 +1,9 @@
 // deno-lint-ignore-file no-non-null-assertion
 import type { ButtonProps } from "~/client/components/ui/button.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
-
 import { cn } from "~/client/lib/utils.ts";
+
+import * as m from "~/paraglide/messages.js";
 import type { CreateEmblaCarouselType } from "embla-carousel-solid";
 
 import createEmblaCarousel from "embla-carousel-solid";
@@ -229,7 +230,7 @@ const CarouselPrevious: Component<CarouselButtonProps> = (rawProps) => {
         <path d="M5 12l6 6" />
         <path d="M5 12l6 -6" />
       </svg>
-      <span class="sr-only">Previous slide</span>
+      <span class="sr-only">{m.a11y_previous_slide()}</span>
     </Button>
   );
 };
@@ -271,7 +272,7 @@ const CarouselNext: Component<CarouselButtonProps> = (rawProps) => {
         <path d="M13 18l6 -6" />
         <path d="M13 6l6 6" />
       </svg>
-      <span class="sr-only">Next slide</span>
+      <span class="sr-only">{m.a11y_next_slide()}</span>
     </Button>
   );
 };

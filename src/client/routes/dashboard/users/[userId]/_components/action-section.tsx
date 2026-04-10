@@ -10,6 +10,7 @@ import {
 } from "~/client/components/ui/card.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { listUsersQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import type { SelectUser } from "~/shared/types/auth.ts";
 import Drama from "~icons/lucide/drama";
 import LoaderCircle from "~icons/lucide/loader-circle";
@@ -57,7 +58,7 @@ export function ActionSection(props: ImpersonateSectionProps): JSX.Element {
         setIsDeleting(false);
       },
       onSuccess: () => {
-        toast.success(`User ${props.user().name} deleted`);
+        toast.success(m.users_deleted({ name: props.user().name }));
         revalidate(listUsersQuery.key);
         navigate("/dashboard/users");
       },
@@ -69,9 +70,9 @@ export function ActionSection(props: ImpersonateSectionProps): JSX.Element {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Actions</CardTitle>
+        <CardTitle>{m.users_actions_title()}</CardTitle>
         <CardDescription>
-          Manage user
+          {m.users_actions_description()}
         </CardDescription>
       </CardHeader>
       <CardContent class="space-y-3">
@@ -82,7 +83,7 @@ export function ActionSection(props: ImpersonateSectionProps): JSX.Element {
           variant="outline"
         >
           <Drama class="mr-2 size-4" />
-          <Show when={isImpersonating()} fallback="Impersonate user">
+          <Show when={isImpersonating()} fallback={m.users_impersonate()}>
             <LoaderCircle class="size-4 animate-spin" />
           </Show>
         </Button>
@@ -94,7 +95,7 @@ export function ActionSection(props: ImpersonateSectionProps): JSX.Element {
           onClick={() => setDeleteDialogOpen(true)}
         >
           <Trash2 class="mr-2 size-4" />
-          <Show when={isDeleting()} fallback="Delete user">
+          <Show when={isDeleting()} fallback={m.users_delete()}>
             <LoaderCircle class="size-4 animate-spin" />
           </Show>
         </Button>
@@ -103,9 +104,9 @@ export function ActionSection(props: ImpersonateSectionProps): JSX.Element {
           isOpen={deleteDialogOpen}
           setIsOpen={setDeleteDialogOpen}
           isPending={isDeleting()}
-          title="Delete user"
-          description={`Are you sure you want to delete ${props.user().name}?`}
-          buttonText="Delete user"
+          title={m.users_delete()}
+          description={m.users_delete_confirm({ name: props.user().name })}
+          buttonText={m.users_delete_button()}
           icon={<Trash2 />}
           onDelete={handleDelete}
         />

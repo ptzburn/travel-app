@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "~/client/components/ui/card.tsx";
 
+import * as m from "~/paraglide/messages.js";
 import CircleAlert from "~icons/lucide/circle-alert";
 import House from "~icons/lucide/house";
 import type { JSX } from "solid-js";
@@ -48,10 +49,10 @@ export default function ErrorPage(): JSX.Element {
               <CircleAlert class="size-8 text-destructive" />
             </div>
             <CardTitle class="text-2xl">
-              Something went wrong
+              {m.auth_error_title()}
             </CardTitle>
             <CardDescription class="text-base">
-              An error occurred while processing your request
+              {m.auth_error_description()}
             </CardDescription>
           </CardHeader>
 
@@ -59,7 +60,7 @@ export default function ErrorPage(): JSX.Element {
             <div class="rounded-lg bg-muted/50 p-4">
               <div class="mb-1 flex items-center gap-2">
                 <span class="font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-                  Error details
+                  {m.auth_error_details()}
                 </span>
               </div>
               <p class="wrap-break-words text-foreground/80 text-sm">
@@ -75,7 +76,7 @@ export default function ErrorPage(): JSX.Element {
                 class="w-full sm:flex-1"
               >
                 <House class="mr-2 size-4" />
-                Go back to home
+                {m.auth_go_home()}
               </Button>
             </A>
           </CardFooter>

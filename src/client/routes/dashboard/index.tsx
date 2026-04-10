@@ -25,6 +25,7 @@ import {
   setLocationFilters,
 } from "~/client/stores/location-filters.ts";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import * as m from "~/paraglide/messages.js";
 import LucideCirclePlus from "~icons/lucide/circle-plus";
 import MapPinIcon from "~icons/lucide/map-pin";
 import PlusIcon from "~icons/lucide/plus";
@@ -90,16 +91,16 @@ export default function DashboardPage(): JSX.Element {
   return (
     <div class="flex min-h-0 flex-1 flex-col gap-6">
       <div class="flex items-center justify-between">
-        <h2>Locations</h2>
+        <h2>{m.locations_title()}</h2>
         <TooltipButton
-          tooltip="Add Location"
+          tooltip={m.locations_add()}
           size="icon-lg"
           variant="ghost"
           as={A}
           href="/dashboard/locations/add"
         >
           <LucideCirclePlus class="size-5" />
-          <span class="sr-only">Add Location</span>
+          <span class="sr-only">{m.locations_add()}</span>
         </TooltipButton>
       </div>
 
@@ -122,9 +123,9 @@ export default function DashboardPage(): JSX.Element {
                     <EmptyMedia variant="icon">
                       <MapPinIcon />
                     </EmptyMedia>
-                    <EmptyTitle>No locations yet</EmptyTitle>
+                    <EmptyTitle>{m.locations_empty_title()}</EmptyTitle>
                     <EmptyDescription>
-                      Add your first location to see it on the map.
+                      {m.locations_empty_description()}
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
@@ -135,7 +136,7 @@ export default function DashboardPage(): JSX.Element {
                       variant="outline"
                     >
                       <PlusIcon />
-                      Add Location
+                      {m.locations_add()}
                     </Button>
                   </EmptyContent>
                 </Empty>

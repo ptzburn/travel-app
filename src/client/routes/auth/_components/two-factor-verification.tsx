@@ -10,6 +10,7 @@ import {
 
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import CircleQuestionMark from "~icons/lucide/circle-question-mark";
 import {
   type Accessor,
@@ -39,14 +40,14 @@ function TrustDeviceCheckbox(props: {
         onChange={props.onChange}
       />
       <Label>
-        Trust Device
+        {m.auth_trust_device()}
       </Label>
       <Tooltip>
         <TooltipTrigger class="text-muted-foreground">
           <CircleQuestionMark class="size-4" />
         </TooltipTrigger>
         <TooltipContent>
-          Trust this device to automatically sign in next time.
+          {m.auth_trust_device_tooltip()}
         </TooltipContent>
       </Tooltip>
     </div>
@@ -63,7 +64,7 @@ function TotpForm(props: {
     defaultValues: { code: "" },
     validators: {
       onSubmit: z.object({
-        code: z.string().length(6, "Invalid code"),
+        code: z.string().length(6, m.auth_invalid_code()),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -72,7 +73,7 @@ function TotpForm(props: {
         trustDevice: props.trustDevice(),
         fetchOptions: {
           onError: (ctx) => {
-            toast.error(ctx.error.message || "An error occurred");
+            toast.error(ctx.error.message || m.auth_error_generic());
           },
           onSuccess: () => {
             globalThis.location.href = "/dashboard";
@@ -85,9 +86,9 @@ function TotpForm(props: {
   return (
     <div class="space-y-8">
       <div class="flex flex-col items-center gap-2 text-center">
-        <h1 class="font-bold text-2xl">Two-Factor Authentication</h1>
+        <h1 class="font-bold text-2xl">{m.auth_2fa_title()}</h1>
         <p class="text-balance text-muted-foreground text-sm">
-          Enter the code sent to your email to verify your account.
+          {m.auth_2fa_totp_description()}
         </p>
       </div>
       <form
@@ -107,14 +108,14 @@ function TotpForm(props: {
           type="button"
           onClick={props.onUseBackup}
         >
-          Use Backup Code
+          {m.auth_use_backup_code()}
         </Button>
         <TrustDeviceCheckbox
           checked={props.trustDevice}
           onChange={props.onTrustDeviceChange}
         />
         <form.AppForm>
-          <form.SubmitButton>Verify</form.SubmitButton>
+          <form.SubmitButton>{m.common_verify()}</form.SubmitButton>
         </form.AppForm>
         <div class="flex flex-col gap-3">
           <Show when={props.onBack}>
@@ -125,7 +126,7 @@ function TotpForm(props: {
               onClick={() => props.onBack?.()}
               disabled={form.state.isSubmitting}
             >
-              Back
+              {m.common_back()}
             </Button>
           </Show>
         </div>
@@ -144,7 +145,7 @@ function BackupCodeForm(props: {
     defaultValues: { code: "" },
     validators: {
       onSubmit: z.object({
-        code: z.string().min(1, "Invalid code"),
+        code: z.string().min(1, m.auth_invalid_code()),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -153,7 +154,7 @@ function BackupCodeForm(props: {
         trustDevice: props.trustDevice(),
         fetchOptions: {
           onError: (ctx) => {
-            toast.error(ctx.error.message || "An error occurred");
+            toast.error(ctx.error.message || m.auth_error_generic());
           },
           onSuccess: () => {
             globalThis.location.href = "/dashboard";
@@ -166,9 +167,9 @@ function BackupCodeForm(props: {
   return (
     <div class="space-y-8">
       <div class="flex flex-col items-center gap-2 text-center">
-        <h1 class="font-bold text-2xl">Two-Factor Authentication</h1>
+        <h1 class="font-bold text-2xl">{m.auth_2fa_title()}</h1>
         <p class="text-balance text-muted-foreground text-sm">
-          Enter the backup code sent to your email to verify your account.
+          {m.auth_2fa_backup_description()}
         </p>
       </div>
       <form
@@ -182,8 +183,8 @@ function BackupCodeForm(props: {
         <form.AppField name="code">
           {(field) => (
             <field.TextField
-              label="Backup Code"
-              placeholder="Enter your backup code"
+              label={m.auth_backup_code_label()}
+              placeholder={m.auth_backup_code_placeholder()}
             />
           )}
         </form.AppField>
@@ -193,14 +194,14 @@ function BackupCodeForm(props: {
           type="button"
           onClick={props.onUseTotp}
         >
-          Use TOTP
+          {m.auth_use_totp()}
         </Button>
         <TrustDeviceCheckbox
           checked={props.trustDevice}
           onChange={props.onTrustDeviceChange}
         />
         <form.AppForm>
-          <form.SubmitButton>Verify</form.SubmitButton>
+          <form.SubmitButton>{m.common_verify()}</form.SubmitButton>
         </form.AppForm>
         <div class="flex flex-col gap-3">
           <Show when={props.onBack}>
@@ -211,7 +212,7 @@ function BackupCodeForm(props: {
               onClick={() => props.onBack?.()}
               disabled={form.state.isSubmitting}
             >
-              Back
+              {m.common_back()}
             </Button>
           </Show>
         </div>

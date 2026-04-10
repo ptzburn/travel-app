@@ -1,4 +1,5 @@
 import { A } from "@solidjs/router";
+import { LanguageSwitcher } from "~/client/components/language-switcher.tsx";
 import { ThemeToggle } from "~/client/components/theme-toggle.tsx";
 import { Badge } from "~/client/components/ui/badge.tsx";
 import { Button } from "~/client/components/ui/button.tsx";
@@ -9,6 +10,7 @@ import {
   CardTitle,
 } from "~/client/components/ui/card.tsx";
 import { Separator } from "~/client/components/ui/separator.tsx";
+import * as m from "~/paraglide/messages.js";
 import ArrowRight from "~icons/lucide/arrow-right";
 import CalendarDays from "~icons/lucide/calendar-days";
 import Camera from "~icons/lucide/camera";
@@ -18,42 +20,36 @@ import MapPin from "~icons/lucide/map-pin";
 import Route from "~icons/lucide/route";
 import { For, type JSX } from "solid-js";
 
-const features = [
+const features = () => [
   {
     icon: MapIcon,
-    title: "Interactive Map",
-    description:
-      "Explore your world on a beautiful, responsive map. Pan, zoom, and discover all your saved places at a glance.",
+    title: m.landing_feature_map_title(),
+    description: m.landing_feature_map_description(),
   },
   {
     icon: MapPin,
-    title: "Pin Your Places",
-    description:
-      "Save locations by dropping a pin on the map. Add names, descriptions, and coordinates for every spot that matters.",
+    title: m.landing_feature_pin_title(),
+    description: m.landing_feature_pin_description(),
   },
   {
     icon: CalendarDays,
-    title: "Log Your Visits",
-    description:
-      "Record each visit with dates, notes, and exact coordinates. Build a timeline of memories for every location.",
+    title: m.landing_feature_log_title(),
+    description: m.landing_feature_log_description(),
   },
   {
     icon: Camera,
-    title: "Photo Journals",
-    description:
-      "Attach photos to your logs and relive the moments. Upload, browse, and manage your travel gallery.",
+    title: m.landing_feature_photo_title(),
+    description: m.landing_feature_photo_description(),
   },
   {
     icon: Route,
-    title: "Track Your Journey",
-    description:
-      "See all your visits on the map with custom markers. Hover to highlight, click to dive into the details.",
+    title: m.landing_feature_track_title(),
+    description: m.landing_feature_track_description(),
   },
   {
     icon: Globe,
-    title: "Dark & Light Modes",
-    description:
-      "Switch between light and dark map styles that adapt to your theme preference — day or night.",
+    title: m.landing_feature_theme_title(),
+    description: m.landing_feature_theme_description(),
   },
 ];
 
@@ -62,11 +58,15 @@ export default function LandingPage(): JSX.Element {
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <header class="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
         <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <span class="font-semibold text-sm tracking-tight">Travel App</span>
           <div class="flex items-center gap-2">
+            <img src="/icon.png" alt="Carte" class="size-7 rounded-md" />
+            <span class="font-semibold text-sm tracking-tight">Carte</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button as={A} href="/auth/sign-in" size="sm">
-              Sign in
+              {m.landing_sign_in()}
             </Button>
           </div>
         </div>
@@ -80,22 +80,24 @@ export default function LandingPage(): JSX.Element {
           </div>
 
           <Badge variant="secondary" round>
-            Your personal travel companion
+            {m.landing_badge()}
           </Badge>
 
           <div class="relative flex max-w-2xl flex-col gap-4">
             <h1 class="font-bold text-4xl tracking-tight sm:text-5xl lg:text-6xl">
-              Map your memories, <span class="text-primary">pin by pin</span>
+              {m.landing_hero_title()}{" "}
+              <span class="text-primary">
+                {m.landing_hero_title_highlight()}
+              </span>
             </h1>
             <p class="mx-auto max-w-lg text-lg text-muted-foreground">
-              Save the places you love, log every visit with photos and notes,
-              and watch your personal map come alive.
+              {m.landing_hero_description()}
             </p>
           </div>
 
           <div class="relative flex flex-wrap items-center justify-center gap-3">
             <Button as={A} href="/auth/sign-in" size="lg">
-              Start mapping
+              {m.landing_start_mapping()}
               <ArrowRight class="size-4" />
             </Button>
           </div>
@@ -106,16 +108,15 @@ export default function LandingPage(): JSX.Element {
         <section class="mx-auto w-full max-w-5xl px-6 py-20">
           <div class="mb-12 text-center">
             <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
-              Everything you need to remember every place
+              {m.landing_features_title()}
             </h2>
             <p class="mt-2 text-muted-foreground">
-              An interactive map, visit logs, and photo journals — all in one
-              dashboard.
+              {m.landing_features_description()}
             </p>
           </div>
 
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <For each={features}>
+            <For each={features()}>
               {(feature) => (
                 <Card class="h-full transition-colors hover:border-primary/40">
                   <CardHeader>
@@ -136,7 +137,7 @@ export default function LandingPage(): JSX.Element {
         <section class="mx-auto w-full max-w-4xl px-6 py-20">
           <div class="mb-12 text-center">
             <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
-              How it works
+              {m.landing_how_it_works()}
             </h2>
           </div>
 
@@ -145,10 +146,9 @@ export default function LandingPage(): JSX.Element {
               <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
                 1
               </div>
-              <h3 class="font-semibold text-lg">Drop a pin</h3>
+              <h3 class="font-semibold text-lg">{m.landing_step1_title()}</h3>
               <p class="text-muted-foreground text-sm">
-                Find a spot on the map and save it as a location with a name and
-                description.
+                {m.landing_step1_description()}
               </p>
             </div>
 
@@ -156,10 +156,9 @@ export default function LandingPage(): JSX.Element {
               <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
                 2
               </div>
-              <h3 class="font-semibold text-lg">Log your visits</h3>
+              <h3 class="font-semibold text-lg">{m.landing_step2_title()}</h3>
               <p class="text-muted-foreground text-sm">
-                Add entries with dates, notes, and photos each time you visit or
-                want to remember something.
+                {m.landing_step2_description()}
               </p>
             </div>
 
@@ -167,10 +166,9 @@ export default function LandingPage(): JSX.Element {
               <div class="flex size-12 items-center justify-center rounded-full bg-primary font-bold text-lg text-primary-foreground">
                 3
               </div>
-              <h3 class="font-semibold text-lg">Explore your map</h3>
+              <h3 class="font-semibold text-lg">{m.landing_step3_title()}</h3>
               <p class="text-muted-foreground text-sm">
-                See all your places and visits on one interactive map. Click any
-                marker to dive in.
+                {m.landing_step3_description()}
               </p>
             </div>
           </div>
@@ -180,19 +178,19 @@ export default function LandingPage(): JSX.Element {
 
         <section class="flex flex-col items-center gap-6 px-6 py-20 text-center">
           <h2 class="font-bold text-2xl tracking-tight sm:text-3xl">
-            Ready to start pinning?
+            {m.landing_cta_title()}
           </h2>
           <p class="max-w-md text-muted-foreground">
-            Sign in and build your personal travel map — one memory at a time.
+            {m.landing_cta_description()}
           </p>
           <Button as={A} href="/auth/sign-in" size="lg">
-            Get started
+            {m.landing_get_started()}
             <ArrowRight class="size-4" />
           </Button>
         </section>
 
         <footer class="border-t py-6 text-center text-muted-foreground text-sm">
-          Built by{" "}
+          {m.landing_built_by()}{" "}
           <a
             href="https://github.com/ptzburn"
             target="_blank"

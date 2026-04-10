@@ -4,6 +4,7 @@ import { Button } from "~/client/components/ui/button.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX, Match, type Setter, Switch } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -52,7 +53,7 @@ export default function SignInForm(props: SignInFormProps): JSX.Element {
             if (ctx.error.status === 403) {
               setStep("otp");
             }
-            toast.error(ctx.error.message || "An error occurred");
+            toast.error(ctx.error.message || m.auth_error_generic());
           },
         },
       });
@@ -86,7 +87,7 @@ export default function SignInForm(props: SignInFormProps): JSX.Element {
               {(field) => (
                 <field.TextField
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={m.auth_enter_email()}
                 />
               )}
             </form.AppField>
@@ -98,12 +99,12 @@ export default function SignInForm(props: SignInFormProps): JSX.Element {
                       href="/auth/forgot-password"
                       class="ml-auto text-sm underline-offset-4 hover:underline"
                     >
-                      Forgot Password
+                      {m.auth_forgot_password_link()}
                     </A>
                   </div>
                   <field.TextField
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder={m.auth_enter_password()}
                   />
                 </div>
               )}
@@ -118,7 +119,7 @@ export default function SignInForm(props: SignInFormProps): JSX.Element {
             <div class="space-y-3">
               <form.AppForm>
                 <form.SubmitButton disabled={!turnstileToken()}>
-                  Sign In
+                  {m.auth_sign_in_button()}
                 </form.SubmitButton>
               </form.AppForm>
               <form.Subscribe selector={(state) => state.isSubmitting}>
@@ -130,7 +131,7 @@ export default function SignInForm(props: SignInFormProps): JSX.Element {
                     onClick={() => props.setter(false)}
                     disabled={isSubmitting()}
                   >
-                    Back
+                    {m.common_back()}
                   </Button>
                 )}
               </form.Subscribe>

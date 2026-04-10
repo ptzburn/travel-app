@@ -1,7 +1,8 @@
 import type { PolymorphicProps } from "@kobalte/core";
 import * as BreadcrumbPrimitive from "@kobalte/core/breadcrumbs";
-
 import { cn } from "~/client/lib/utils.ts";
+
+import * as m from "~/paraglide/messages.js";
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 
 import { Show, splitProps } from "solid-js";
@@ -112,7 +113,7 @@ const BreadcrumbEllipsis: Component<ComponentProps<"span">> = (props) => {
         <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
         <path d="M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
       </svg>
-      <span class="sr-only">More</span>
+      <span class="sr-only">{m.a11y_more()}</span>
     </span>
   );
 };

@@ -1,4 +1,5 @@
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
+import * as m from "~/paraglide/messages.js";
 import type { JSX } from "solid-js";
 import z from "zod";
 
@@ -14,7 +15,7 @@ export function PasswordForm(props: PasswordFormProps): JSX.Element {
       onSubmit: z.object({
         password: z.string().min(
           8,
-          "Password must be at least 8 characters long",
+          m.security_password_min_length(),
         ),
       }),
     },
@@ -36,9 +37,9 @@ export function PasswordForm(props: PasswordFormProps): JSX.Element {
       <form.AppField name="password">
         {(field) => (
           <field.TextField
-            label="Password"
+            label={m.security_password_label()}
             type="password"
-            placeholder="Current password"
+            placeholder={m.security_password_placeholder()}
           />
         )}
       </form.AppField>

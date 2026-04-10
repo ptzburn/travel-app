@@ -1,12 +1,12 @@
 import type { PolymorphicProps } from "@kobalte/core";
 import { Polymorphic } from "@kobalte/core";
-
 import type { ButtonProps } from "~/client/components/ui/button.tsx";
+
 import { Button } from "~/client/components/ui/button.tsx";
 import { Separator } from "~/client/components/ui/separator.tsx";
 import { Sheet, SheetContent } from "~/client/components/ui/sheet.tsx";
-
 import { Skeleton } from "~/client/components/ui/skeleton.tsx";
+
 import {
   TextField,
   TextFieldInput,
@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "~/client/components/ui/tooltip.tsx";
 import { cn } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type {
@@ -342,7 +343,7 @@ const SidebarTrigger = <T extends ValidComponent = "button">(
       >
         {local.children}
       </Show>
-      <span class="sr-only">Toggle Sidebar</span>
+      <span class="sr-only">{m.a11y_toggle_sidebar()}</span>
     </Button>
   );
 };
@@ -354,10 +355,10 @@ const SidebarRail: Component<ComponentProps<"button">> = (props) => {
   return (
     <button
       data-sidebar="rail"
-      aria-label="Toggle Sidebar"
+      aria-label={m.a11y_toggle_sidebar()}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      title={m.a11y_toggle_sidebar()}
       class={cn(
         "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex group-data-[side=left]:-right-4 group-data-[side=right]:left-0",
         "[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize",

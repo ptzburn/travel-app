@@ -8,6 +8,7 @@ import {
   ItemSeparator,
   ItemTitle,
 } from "~/client/components/ui/item.tsx";
+import * as m from "~/paraglide/messages.js";
 import type { SelectUser } from "~/shared/types/auth.ts";
 import ALargeSmall from "~icons/lucide/a-large-small";
 import Calendar from "~icons/lucide/calendar";
@@ -39,7 +40,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
           </ItemMedia>
           <ItemContent>
             <ItemTitle class="font-medium text-muted-foreground">
-              Name
+              {m.users_account_name()}
             </ItemTitle>
             <p class="wrap-break-word font-semibold text-base">
               {props.user().name}
@@ -51,7 +52,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
               size="sm"
               onClick={() => setNameDialogOpen(true)}
             >
-              Change
+              {m.users_change()}
             </Button>
           </ItemActions>
         </Item>
@@ -62,7 +63,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
           </ItemMedia>
           <ItemContent>
             <ItemTitle class="font-medium text-muted-foreground">
-              Email
+              {m.users_account_email()}
             </ItemTitle>
             <p class="wrap-break-word font-semibold text-base">
               {props.user().email}
@@ -83,7 +84,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
           </ItemMedia>
           <ItemContent>
             <ItemTitle class="font-medium text-muted-foreground">
-              Role
+              {m.users_account_role()}
             </ItemTitle>
             <p class="font-semibold text-base capitalize">
               {props.user().role || "user"}
@@ -95,7 +96,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
               size="sm"
               onClick={() => setRoleDialogOpen(true)}
             >
-              Change
+              {m.users_change()}
             </Button>
           </ItemActions>
         </Item>
@@ -106,7 +107,7 @@ export function AccountDetails(props: AccountDetailsProps): JSX.Element {
           </ItemMedia>
           <ItemContent>
             <ItemTitle class="font-medium text-muted-foreground">
-              Created
+              {m.users_account_created()}
             </ItemTitle>
             <p class="wrap-break-word font-semibold text-base">
               {format(props.user().createdAt, "dd.MM.yyyy")}

@@ -1,6 +1,5 @@
 import { useColorMode } from "@kobalte/core";
 import { A } from "@solidjs/router";
-
 import {
   Avatar,
   AvatarFallback,
@@ -8,6 +7,7 @@ import {
 } from "~/client/components/ui/avatar.tsx";
 
 import { Button } from "~/client/components/ui/button.tsx";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import {
 import { useSession } from "~/client/contexts/session-context.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { getFileUrl, getInitials } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 import ChevronsUpDown from "~icons/lucide/chevrons-up-down";
 import LogOut from "~icons/lucide/log-out";
 import Moon from "~icons/lucide/moon";
@@ -90,7 +91,7 @@ export function NavUser(): JSX.Element {
               class="hover:cursor-pointer"
             >
               <User class="size-4" />
-              Account
+              {m.nav_account()}
             </DropdownMenuItem>
             <DropdownMenuItem
               class="hover:cursor-pointer"
@@ -102,7 +103,7 @@ export function NavUser(): JSX.Element {
               >
                 <Sun class="size-4" />
               </Show>
-              Toggle Theme
+              {m.nav_toggle_theme()}
             </DropdownMenuItem>
             <Show
               when={!session.session.impersonatedBy}
@@ -115,7 +116,7 @@ export function NavUser(): JSX.Element {
                   onClick={handleStopImpersonating}
                 >
                   <LogOut class="size-4" />
-                  Stop Impersonating
+                  {m.nav_stop_impersonating()}
                 </DropdownMenuItem>
               }
             >
@@ -125,7 +126,7 @@ export function NavUser(): JSX.Element {
                 class="hover:cursor-pointer"
               >
                 <LogOut class="size-4" />
-                Sign Out
+                {m.nav_sign_out()}
               </DropdownMenuItem>
             </Show>
           </DropdownMenuContent>

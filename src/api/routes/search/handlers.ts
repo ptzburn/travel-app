@@ -19,7 +19,7 @@ export const get: AppRouteHandler<GetRoute> = async (
     {
       signal: AbortSignal.timeout(5000),
       headers: {
-        "User-Agent": `Travel App | ${env.CONTACT_EMAIL}`,
+        "User-Agent": `Carte | ${env.CONTACT_EMAIL}`,
       },
     },
   );

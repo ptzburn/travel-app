@@ -5,6 +5,7 @@ import { useSession } from "~/client/contexts/session-context.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 import { getSessionQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX, Match, onCleanup, Switch } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -55,7 +56,7 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
     },
     onSubmit: async ({ value }) => {
       if (value.phoneNumber === session.user.phoneNumber) {
-        toast.info("The phone number is the same as the current one");
+        toast.info(m.account_phone_same());
         return;
       }
 
@@ -66,11 +67,11 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
             setPhoneNumber(value.phoneNumber);
             setStep("otp");
             startCooldown();
-            toast.success("Code sent to the phone number");
+            toast.success(m.account_phone_code_sent());
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "Failed to send code to the phone number",
+              error.error.message || m.account_phone_code_failed(),
             );
           },
         },
@@ -99,11 +100,11 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
           onSuccess: () => {
             handleClose(false);
             revalidate(getSessionQuery.key);
-            toast.success("Phone number updated");
+            toast.success(m.account_phone_updated());
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "Failed to update phone number",
+              error.error.message || m.account_phone_update_failed(),
             );
           },
         },
@@ -117,11 +118,11 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
       { phoneNumber: phoneNumber() },
       {
         onSuccess: () => {
-          toast.success("Code sent to the phone number");
+          toast.success(m.account_phone_code_sent());
         },
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "Failed to send code to the phone number",
+            ctx.error.message || m.account_phone_code_failed(),
           );
         },
       },
@@ -137,13 +138,15 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        {props.currentPhoneNumber ? "Edit phone number" : "Add phone number"}
+        {props.currentPhoneNumber
+          ? m.account_edit_phone()
+          : m.account_add_phone()}
       </Button>
 
       <ResponsiveEditDialog
         isOpen={open}
         setIsOpen={handleClose}
-        title="Edit phone number"
+        title={m.account_edit_phone()}
       >
         {() => (
           <Switch>
@@ -162,13 +165,12 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
                     onChange: ({ value }) => {
                       if (value.trim() === session.user.phoneNumber) {
                         return {
-                          message:
-                            "The phone number is the same as the current one",
+                          message: m.account_phone_same(),
                         };
                       }
                       if (!/^\+358\d{9}$/.test(value.trim())) {
                         return {
-                          message: "The phone number is invalid",
+                          message: m.account_phone_invalid(),
                         };
                       }
                       return undefined;
@@ -177,14 +179,14 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
                 >
                   {(field) => (
                     <field.TextField
-                      label="Phone number"
-                      placeholder="+358401234567"
+                      label={m.account_phone_label()}
+                      placeholder={m.account_phone_placeholder()}
                     />
                   )}
                 </phoneForm.AppField>
                 <phoneForm.AppForm>
                   <phoneForm.SubmitButton>
-                    Send code
+                    {m.account_send_code()}
                   </phoneForm.SubmitButton>
                 </phoneForm.AppForm>
               </form>
@@ -210,12 +212,14 @@ export function PhoneDialog(props: PhoneDialogProps): JSX.Element {
                   disabled={isResending() || cooldown() > 0}
                 >
                   {cooldown() > 0
-                    ? `Resend code (${cooldown()}s)`
-                    : "Resend code"}
+                    ? m.account_resend_code_cooldown({
+                      seconds: String(cooldown()),
+                    })
+                    : m.account_resend_code()}
                 </Button>
                 <otpForm.AppForm>
                   <otpForm.SubmitButton>
-                    Verify
+                    {m.common_verify()}
                   </otpForm.SubmitButton>
                 </otpForm.AppForm>
               </form>

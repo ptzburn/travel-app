@@ -1,7 +1,8 @@
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
+import * as m from "~/paraglide/messages.js";
 import { type JSX, Show } from "solid-js";
-import { QRCodeSVG } from "solid-qr-code";
 
+import { QRCodeSVG } from "solid-qr-code";
 import { z } from "zod";
 
 type VerifyTotpStepProps = {
@@ -14,7 +15,7 @@ export function VerifyTotpStep(props: VerifyTotpStepProps): JSX.Element {
     defaultValues: { code: "" },
     validators: {
       onSubmit: z.object({
-        code: z.string().length(6, "Enter a 6-digit code"),
+        code: z.string().length(6, m.security_enter_6_digit()),
       }),
     },
     // deno-lint-ignore require-await
@@ -50,11 +51,11 @@ export function VerifyTotpStep(props: VerifyTotpStepProps): JSX.Element {
       </Show>
 
       <form.AppField name="code">
-        {(field) => <field.OTPField label="Verification code" />}
+        {(field) => <field.OTPField label={m.security_verification_code()} />}
       </form.AppField>
 
       <form.AppForm>
-        <form.SubmitButton>Verify</form.SubmitButton>
+        <form.SubmitButton>{m.common_verify()}</form.SubmitButton>
       </form.AppForm>
     </form>
   );

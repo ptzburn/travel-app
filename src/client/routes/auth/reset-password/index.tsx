@@ -2,6 +2,7 @@ import { A, useLocation, useNavigate } from "@solidjs/router";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX, Match, Switch } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -23,22 +24,22 @@ function ResetPasswordPage(): JSX.Element {
       onSubmit: z.object({
         password: z.string().min(
           8,
-          "Password must be at least 8 characters long",
+          m.auth_password_min_length(),
         ),
         confirmPassword: z.string().min(
           8,
-          "Password must be at least 8 characters long",
+          m.auth_password_min_length(),
         ),
       }).superRefine((data, context) => {
         if (data.password !== data.confirmPassword) {
           context.addIssue({
             code: "custom",
-            message: "Passwords do not match",
+            message: m.auth_passwords_no_match(),
             path: ["password"],
           });
           context.addIssue({
             code: "custom",
-            message: "Passwords do not match",
+            message: m.auth_passwords_no_match(),
             path: ["confirmPassword"],
           });
         }
@@ -46,7 +47,7 @@ function ResetPasswordPage(): JSX.Element {
     },
     onSubmit: async ({ value }) => {
       if (!token) {
-        toast.error("Invalid link");
+        toast.error(m.auth_invalid_link_toast());
         return;
       }
 
@@ -58,12 +59,12 @@ function ResetPasswordPage(): JSX.Element {
           onError: (error) => {
             toast.error(
               error.error.message ||
-                "An error occurred",
+                m.auth_error_generic(),
             );
           },
           onSuccess: () => {
             setIsSuccess(true);
-            toast.success("Password reset successfully");
+            toast.success(m.auth_password_reset_success_toast());
           },
         },
       });
@@ -83,43 +84,43 @@ function ResetPasswordPage(): JSX.Element {
           class="space-y-8"
         >
           <div class="flex flex-col items-center gap-2 text-center">
-            <h1 class="font-bold text-2xl">Reset Password</h1>
+            <h1 class="font-bold text-2xl">{m.auth_reset_password_title()}</h1>
             <p class="text-balance text-muted-foreground text-sm">
-              Enter your new password below.
+              {m.auth_reset_password_description()}
             </p>
           </div>
           <div class="grid gap-6">
             <form.AppField name="password">
               {(field) => (
                 <field.TextField
-                  label="New Password"
+                  label={m.auth_new_password_label()}
                   type="password"
-                  placeholder="Enter your new password"
+                  placeholder={m.auth_new_password_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppField name="confirmPassword">
               {(field) => (
                 <field.TextField
-                  label="Confirm Password"
+                  label={m.auth_confirm_password_label()}
                   type="password"
-                  placeholder="Confirm your new password"
+                  placeholder={m.auth_confirm_password_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppForm>
               <form.SubmitButton>
-                Reset Password
+                {m.auth_reset_password_button()}
               </form.SubmitButton>
             </form.AppForm>
           </div>
           <div class="text-center text-sm">
-            Remember your password?{" "}
+            {m.auth_remember_password()}{" "}
             <A
               href="/auth/sign-in"
               class="underline underline-offset-4"
             >
-              Sign In
+              {m.auth_sign_in_button()}
             </A>
           </div>
         </form>
@@ -129,10 +130,10 @@ function ResetPasswordPage(): JSX.Element {
         <div class="space-y-6">
           <div class="flex flex-col items-center gap-2 text-center">
             <h1 class="font-bold text-2xl">
-              Invalid Link
+              {m.auth_invalid_link_title()}
             </h1>
             <p class="text-balance text-muted-foreground text-sm">
-              The link is invalid or has expired.
+              {m.auth_invalid_link_description()}
             </p>
           </div>
           <div class="text-center">
@@ -140,7 +141,7 @@ function ResetPasswordPage(): JSX.Element {
               href="/auth/forgot-password"
               class="text-sm underline underline-offset-4"
             >
-              Request a new link
+              {m.auth_request_new_link()}
             </A>
           </div>
         </div>
@@ -149,10 +150,10 @@ function ResetPasswordPage(): JSX.Element {
         <div class="space-y-6">
           <div class="flex flex-col items-center gap-2 text-center">
             <h1 class="font-bold text-2xl">
-              Password Reset Successfully
+              {m.auth_password_reset_success_title()}
             </h1>
             <p class="text-balance text-muted-foreground text-sm">
-              Your password has been reset successfully.
+              {m.auth_password_reset_success_description()}
             </p>
           </div>
         </div>

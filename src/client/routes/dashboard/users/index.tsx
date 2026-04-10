@@ -1,6 +1,5 @@
 import { createAsync } from "@solidjs/router";
 import { ErrorBoundaryMessage } from "~/client/components/error-boundary-message.tsx";
-
 import {
   Empty,
   EmptyDescription,
@@ -8,6 +7,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/client/components/ui/empty.tsx";
+
 import {
   Pagination,
   PaginationEllipsis,
@@ -18,6 +18,7 @@ import {
 } from "~/client/components/ui/pagination.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { listUsersQuery, USERS_PAGE_SIZE } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import UsersIcon from "~icons/lucide/users";
 import {
   createMemo,
@@ -51,9 +52,9 @@ export default function UsersPage(): JSX.Element {
   return (
     <div class="flex flex-1 flex-col gap-6">
       <div class="flex flex-col gap-2">
-        <h2>Users</h2>
+        <h2>{m.users_title()}</h2>
         <p class="text-muted-foreground">
-          Manage users and their permissions.
+          {m.users_subtitle()}
         </p>
       </div>
 
@@ -88,9 +89,9 @@ export default function UsersPage(): JSX.Element {
                         <EmptyMedia variant="icon">
                           <UsersIcon />
                         </EmptyMedia>
-                        <EmptyTitle>No users found</EmptyTitle>
+                        <EmptyTitle>{m.users_empty_title()}</EmptyTitle>
                         <EmptyDescription>
-                          No users found.
+                          {m.users_empty_description()}
                         </EmptyDescription>
                       </EmptyHeader>
                     </Empty>

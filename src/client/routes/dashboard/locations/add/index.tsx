@@ -10,6 +10,7 @@ import {
   type SearchResult,
 } from "~/client/routes/dashboard/locations/_components/location-search.tsx";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import * as m from "~/paraglide/messages.js";
 import { createEffect, createSignal, type JSX, onCleanup } from "solid-js";
 
 export default function AddLocationPage(): JSX.Element {
@@ -68,7 +69,7 @@ export default function AddLocationPage(): JSX.Element {
   return (
     <>
       <div class="flex min-h-0 flex-1 flex-col gap-6">
-        <h2>Add Location</h2>
+        <h2>{m.locations_add_title()}</h2>
 
         <div class="flex flex-col gap-4">
           <LocationSearch onSelect={handleSearchSelect} />
@@ -90,10 +91,10 @@ export default function AddLocationPage(): JSX.Element {
           const retry = pendingNavigation();
           if (retry) retry();
         }}
-        title="Are you sure you want to leave?"
-        description="All unsaved changes will be lost."
-        confirmText="Leave"
-        cancelText="Stay"
+        title={m.locations_leave_title()}
+        description={m.locations_leave_description()}
+        confirmText={m.locations_leave_confirm()}
+        cancelText={m.locations_leave_cancel()}
       />
     </>
   );

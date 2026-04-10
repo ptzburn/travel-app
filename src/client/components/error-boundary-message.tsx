@@ -1,4 +1,5 @@
 import { useNavigate } from "@solidjs/router";
+import * as m from "~/paraglide/messages.js";
 import ArrowLeft from "~icons/lucide/arrow-left";
 import type { JSX } from "solid-js";
 import { Button } from "./ui/button.tsx";
@@ -24,7 +25,7 @@ export function ErrorBoundaryMessage(props: ErrorBoundaryProps): JSX.Element {
     : 500;
   const errorMessage = Error.isError(props.error)
     ? props.error.message
-    : "Server Error";
+    : m.error_server();
   return (
     <Empty class="h-dvh bg-linear-to-b from-30% from-muted/50 to-background">
       <EmptyHeader>
@@ -40,7 +41,7 @@ export function ErrorBoundaryMessage(props: ErrorBoundaryProps): JSX.Element {
           onClick={() => navigate(-1)}
         >
           <ArrowLeft />
-          Go back
+          {m.error_go_back()}
         </Button>
       </EmptyContent>
     </Empty>

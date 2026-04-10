@@ -34,7 +34,7 @@ export function TextareaField(
         onChange={(e: Event & { currentTarget: HTMLTextAreaElement }) =>
           field().handleChange(e.currentTarget.value)}
         aria-invalid={isInvalid()}
-        class="min-h-[120px]"
+        class="min-h-[120px] bg-card"
       />
       <Show when={isInvalid()}>
         <FieldError errors={field().state.meta.errors} />

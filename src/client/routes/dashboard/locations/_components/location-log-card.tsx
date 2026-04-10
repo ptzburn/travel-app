@@ -8,6 +8,7 @@ import {
 } from "~/client/components/ui/card.tsx";
 import { LocationLogActions } from "~/client/routes/dashboard/locations/_components/location-log-actions.tsx";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
+import { getLocale } from "~/paraglide/runtime.js";
 import { type JSX, Show } from "solid-js";
 
 type LocationLog = {
@@ -19,7 +20,7 @@ type LocationLog = {
 };
 
 const formatDate = (iso: string): string =>
-  new Date(iso).toLocaleDateString(undefined, {
+  new Date(iso).toLocaleDateString(getLocale(), {
     year: "numeric",
     month: "short",
     day: "numeric",

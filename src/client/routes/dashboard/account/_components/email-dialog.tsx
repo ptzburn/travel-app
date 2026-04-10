@@ -3,6 +3,7 @@ import { ResponsiveEditDialog } from "~/client/components/responsive-edit-dialog
 import { Button } from "~/client/components/ui/button.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -26,7 +27,7 @@ export function EmailDialog(props: EmailDialogProps): JSX.Element {
     },
     onSubmit: async ({ formApi, value }) => {
       if (value.email === props.currentEmail) {
-        toast.info("The email is the same as the current one");
+        toast.info(m.account_email_same());
         return;
       }
 
@@ -39,11 +40,11 @@ export function EmailDialog(props: EmailDialogProps): JSX.Element {
           onSuccess: () => {
             formApi.reset();
             setOpen(false);
-            toast.success("Code sent to the new email");
+            toast.success(m.account_email_code_sent());
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "Failed to update email",
+              error.error.message || m.account_email_update_failed(),
             );
           },
         },
@@ -58,13 +59,13 @@ export function EmailDialog(props: EmailDialogProps): JSX.Element {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        Edit email
+        {m.account_edit_email()}
       </Button>
 
       <ResponsiveEditDialog
         isOpen={open}
         setIsOpen={setOpen}
-        title="Edit email"
+        title={m.account_edit_email()}
       >
         {() => (
           <form
@@ -78,13 +79,13 @@ export function EmailDialog(props: EmailDialogProps): JSX.Element {
             <form.AppField name="email">
               {(field) => (
                 <field.TextField
-                  label="Email"
-                  placeholder="johndoe@example.com"
+                  label={m.account_email()}
+                  placeholder={m.account_email_placeholder()}
                 />
               )}
             </form.AppField>
             <form.AppForm>
-              <form.SubmitButton>Save</form.SubmitButton>
+              <form.SubmitButton>{m.common_save()}</form.SubmitButton>
             </form.AppForm>
           </form>
         )}

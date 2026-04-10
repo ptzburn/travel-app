@@ -9,6 +9,7 @@ import {
 import { getLocationsQuery } from "~/client/queries/locations.ts";
 import { locationFilters } from "~/client/stores/location-filters.ts";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
+import * as m from "~/paraglide/messages.js";
 
 import MapPinIcon from "~icons/lucide/map-pin";
 import PlusIcon from "~icons/lucide/plus";
@@ -31,13 +32,13 @@ export function LocationsNav(): JSX.Element {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Locations</SidebarGroupLabel>
+      <SidebarGroupLabel>{m.nav_locations()}</SidebarGroupLabel>
       <SidebarMenu>
         <A href="/dashboard/locations/add">
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Add Location">
+            <SidebarMenuButton tooltip={m.nav_add_location()}>
               <PlusIcon />
-              <span class="truncate">Add Location</span>
+              <span class="truncate">{m.nav_add_location()}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </A>

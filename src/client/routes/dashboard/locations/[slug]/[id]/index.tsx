@@ -40,6 +40,7 @@ import { TooltipButton } from "~/client/components/ui/tooltip-button.tsx";
 import { getFileUrl } from "~/client/lib/utils.ts";
 import { getLocationLogByIdQuery } from "~/client/queries/location-logs.ts";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import * as m from "~/paraglide/messages.js";
 import LucideCirclePlus from "~icons/lucide/circle-plus";
 import ImageIcon from "~icons/lucide/image";
 import ImageUpIcon from "~icons/lucide/image-up";
@@ -86,12 +87,12 @@ export default function LocationLogDetailPage(): JSX.Element {
     try {
       await deleteImageAction(params.slug, params.id, String(imageId));
       await revalidate(getLocationLogByIdQuery.key);
-      toast.success("Image deleted");
+      toast.success(m.images_deleted());
       setIsDeleteOpen(false);
       setDeletingImageId(null);
     } catch (error) {
       toast.error(
-        Error.isError(error) ? error.message : "Failed to delete image",
+        Error.isError(error) ? error.message : m.images_delete_failed(),
       );
     } finally {
       setIsDeleting(false);
@@ -121,12 +122,12 @@ export default function LocationLogDetailPage(): JSX.Element {
       try {
         await uploadAction(params.slug, params.id, blob);
         await revalidate(getLocationLogByIdQuery.key);
-        toast.success("Image uploaded successfully");
+        toast.success(m.images_uploaded());
         clearFiles();
         setIsUploadOpen(false);
       } catch (error) {
         toast.error(
-          Error.isError(error) ? error.message : "Failed to upload image",
+          Error.isError(error) ? error.message : m.images_upload_failed(),
         );
       }
     };
@@ -169,8 +170,8 @@ export default function LocationLogDetailPage(): JSX.Element {
                 isOpen={isDeleteOpen}
                 setIsOpen={setIsDeleteOpen}
                 isPending={isDeleting()}
-                title="Delete image?"
-                description="This will permanently delete this image."
+                title={m.images_delete_title()}
+                description={m.images_delete_description()}
                 onDelete={handleDeleteImage}
               />
               <Dialog
@@ -208,15 +209,15 @@ export default function LocationLogDetailPage(): JSX.Element {
               </Dialog>
               <div>
                 <div class="mb-4 flex items-center justify-between">
-                  <h2>Images from {log().name}</h2>
+                  <h2>{m.images_title({ name: log().name })}</h2>
                   <TooltipButton
-                    tooltip="Upload Image"
+                    tooltip={m.images_upload()}
                     size="icon-lg"
                     variant="ghost"
                     onClick={() => setIsUploadOpen(true)}
                   >
                     <LucideCirclePlus class="size-5" />
-                    <span class="sr-only">Upload Image</span>
+                    <span class="sr-only">{m.images_upload()}</span>
                   </TooltipButton>
                   <Dialog
                     open={isUploadOpen()}
@@ -227,9 +228,9 @@ export default function LocationLogDetailPage(): JSX.Element {
                   >
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Upload Image</DialogTitle>
+                        <DialogTitle>{m.images_upload_title()}</DialogTitle>
                         <DialogDescription>
-                          Select an image to upload for this location log.
+                          {m.images_upload_description()}
                         </DialogDescription>
                       </DialogHeader>
                       <div class="flex flex-col gap-4">
@@ -238,14 +239,14 @@ export default function LocationLogDetailPage(): JSX.Element {
                             when={files()[0]?.source}
                             fallback={
                               <p class="text-muted-foreground text-sm">
-                                No image selected
+                                {m.images_no_selection()}
                               </p>
                             }
                           >
                             {(source) => (
                               <img
                                 src={source()}
-                                alt="Upload preview"
+                                alt={m.images_upload_preview_alt()}
                                 class="h-full w-full object-contain"
                               />
                             )}
@@ -261,7 +262,7 @@ export default function LocationLogDetailPage(): JSX.Element {
                           onClick={handleSelectFile}
                           disabled={uploadSubmission.pending}
                         >
-                          Select Image
+                          {m.images_select()}
                         </Button>
                       </div>
                       <DialogFooter>
@@ -271,9 +272,9 @@ export default function LocationLogDetailPage(): JSX.Element {
                         >
                           <Show
                             when={uploadSubmission.pending}
-                            fallback="Upload"
+                            fallback={m.images_upload_button()}
                           >
-                            Uploading...
+                            {m.images_uploading()}
                           </Show>
                           <ImageUpIcon class="size-4" />
                         </Button>
@@ -289,9 +290,9 @@ export default function LocationLogDetailPage(): JSX.Element {
                         <EmptyMedia variant="icon">
                           <ImageIcon />
                         </EmptyMedia>
-                        <EmptyTitle>No images yet</EmptyTitle>
+                        <EmptyTitle>{m.images_empty_title()}</EmptyTitle>
                         <EmptyDescription>
-                          Images will appear here once uploaded.
+                          {m.images_empty_description()}
                         </EmptyDescription>
                       </EmptyHeader>
                       <EmptyContent>
@@ -301,7 +302,7 @@ export default function LocationLogDetailPage(): JSX.Element {
                           onClick={() => setIsUploadOpen(true)}
                         >
                           <ImageUpIcon class="size-4" />
-                          Upload Image
+                          {m.images_upload()}
                         </Button>
                       </EmptyContent>
                     </Empty>

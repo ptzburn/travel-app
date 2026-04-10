@@ -3,6 +3,7 @@ import { A, useNavigate } from "@solidjs/router";
 
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX } from "solid-js";
 import { toast } from "solid-sonner";
 import z from "zod";
@@ -34,11 +35,11 @@ function ForgotPasswordPage(): JSX.Element {
           onError: (error) => {
             toast.error(
               error.error.message ||
-                "An error occurred while requesting the password reset.",
+                m.auth_forgot_password_error(),
             );
           },
           onSuccess: () => {
-            toast.success("Password reset request sent successfully.");
+            toast.success(m.auth_password_reset_sent());
             navigate("/auth/sign-in");
           },
         },
@@ -56,18 +57,18 @@ function ForgotPasswordPage(): JSX.Element {
       class="space-y-8"
     >
       <div class="flex flex-col items-center gap-2 text-center">
-        <h1 class="font-bold text-2xl">Forgot Password</h1>
+        <h1 class="font-bold text-2xl">{m.auth_forgot_password_title()}</h1>
         <p class="text-balance text-muted-foreground text-sm">
-          Enter your email to request a password reset.
+          {m.auth_forgot_password_description()}
         </p>
       </div>
       <div class="grid gap-6">
         <form.AppField name="email">
           {(field) => (
             <field.TextField
-              label="Email"
+              label={m.auth_email_label()}
               type="email"
-              placeholder="example@gmail.com"
+              placeholder={m.auth_email_placeholder()}
             />
           )}
         </form.AppField>
@@ -80,14 +81,14 @@ function ForgotPasswordPage(): JSX.Element {
         </div>
         <form.AppForm>
           <form.SubmitButton disabled={!turnstileToken()}>
-            Request Password Reset
+            {m.auth_request_password_reset()}
           </form.SubmitButton>
         </form.AppForm>
       </div>
       <div class="text-center text-sm">
-        Remember your password?{" "}
+        {m.auth_remember_password()}{" "}
         <A href="/auth/sign-in" class="underline underline-offset-4">
-          Sign In
+          {m.auth_sign_in_button()}
         </A>
       </div>
     </form>

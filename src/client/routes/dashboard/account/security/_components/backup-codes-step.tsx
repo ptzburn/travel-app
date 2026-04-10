@@ -1,6 +1,7 @@
 import { Button } from "~/client/components/ui/button.tsx";
-import Copy from "~icons/lucide/copy";
+import * as m from "~/paraglide/messages.js";
 
+import Copy from "~icons/lucide/copy";
 import type { JSX } from "solid-js";
 import { toast } from "solid-sonner";
 
@@ -12,7 +13,7 @@ type BackupCodesStepProps = {
 export function BackupCodesStep(props: BackupCodesStepProps): JSX.Element {
   function handleCopy(): void {
     navigator.clipboard.writeText(props.backupCodes.join("\n"));
-    toast.success("Backup codes copied to clipboard");
+    toast.success(m.security_backup_codes_copied());
   }
 
   return (
@@ -24,10 +25,10 @@ export function BackupCodesStep(props: BackupCodesStepProps): JSX.Element {
       </div>
       <Button variant="outline" class="w-full" onClick={handleCopy}>
         <Copy class="mr-2 size-4" />
-        Copy
+        {m.security_copy()}
       </Button>
       <Button class="w-full" onClick={props.onDone}>
-        Done
+        {m.security_done()}
       </Button>
     </div>
   );

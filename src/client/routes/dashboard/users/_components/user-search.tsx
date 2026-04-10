@@ -4,13 +4,14 @@ import { FieldGroup, FieldSet } from "~/client/components/ui/field.tsx";
 
 import { Separator } from "~/client/components/ui/separator.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
+import * as m from "~/paraglide/messages.js";
 import Plus from "~icons/lucide/plus";
 import Search from "~icons/lucide/search";
 import { createSignal, type JSX, Show } from "solid-js";
 
 const getRoleOptions = () => [
-  { value: "admin", label: "Admin" },
-  { value: "user", label: "Client" },
+  { value: "admin", label: m.users_role_admin() },
+  { value: "user", label: m.users_role_client() },
 ];
 
 export type UserFilters = {
@@ -51,8 +52,8 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
           <form.AppField name="name">
             {(field) => (
               <field.TextField
-                label="Name"
-                placeholder="Name"
+                label={m.users_name_label()}
+                placeholder={m.users_name_label()}
               />
             )}
           </form.AppField>
@@ -62,8 +63,8 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
           <form.AppField name="email">
             {(field) => (
               <field.TextField
-                label="Email"
-                placeholder="Email"
+                label={m.users_email_label()}
+                placeholder={m.users_email_label()}
               />
             )}
           </form.AppField>
@@ -84,7 +85,7 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
                 onClick={() => setIsDialogOpen(true)}
               >
                 <Plus class="h-4 w-4" />
-                Filters all criteria
+                {m.users_filters()}
                 <Show when={activeCount() > 0}>
                   <span class="ml-2 bg-primary px-2 py-0.5 text-primary-foreground text-xs">
                     {activeCount()}
@@ -104,13 +105,13 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
               props.onClear();
             }}
           >
-            Clear
+            {m.users_clear()}
           </Button>
           <form.AppForm>
             <div class="flex-1 sm:w-32 sm:flex-none">
               <form.SubmitButton variant="default">
                 <Search />
-                Search
+                {m.users_search()}
               </form.SubmitButton>
             </div>
           </form.AppForm>
@@ -120,8 +121,8 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
       <ResponsiveEditDialog
         isOpen={isDialogOpen}
         setIsOpen={setIsDialogOpen}
-        title="Filters all criteria"
-        description="Select a role to filter users by."
+        title={m.users_filters()}
+        description={m.users_filters_description()}
       >
         {() => (
           <div class="space-y-6 pb-4">
@@ -130,8 +131,8 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
                 <form.AppField name="role">
                   {(field) => (
                     <field.SelectField
-                      label="Role"
-                      placeholder="Select role"
+                      label={m.users_role_label()}
+                      placeholder={m.users_role_placeholder()}
                       options={getRoleOptions()}
                     />
                   )}
@@ -149,14 +150,14 @@ export function UserSearch(props: UserSearchProps): JSX.Element {
                   form.setFieldValue("role", "");
                 }}
               >
-                Clear
+                {m.users_clear()}
               </Button>
               <Button
                 type="button"
                 onClick={() => form.handleSubmit()}
               >
                 <Search class="h-4 w-4" />
-                Apply filters
+                {m.users_apply_filters()}
               </Button>
             </div>
           </div>

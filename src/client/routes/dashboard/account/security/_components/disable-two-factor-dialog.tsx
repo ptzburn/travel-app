@@ -3,6 +3,7 @@ import { ResponsiveEditDialog } from "~/client/components/responsive-edit-dialog
 import { authClient } from "~/client/lib/auth-client.ts";
 
 import { getSessionQuery } from "~/client/queries/auth.ts";
+import * as m from "~/paraglide/messages.js";
 import type { Accessor, JSX, Setter } from "solid-js";
 import { toast } from "solid-sonner";
 import { PasswordForm } from "./password-form.tsx";
@@ -22,11 +23,11 @@ export function DisableTwoFactorDialog(
         onSuccess: () => {
           props.setIsOpen(false);
           revalidate(getSessionQuery.key);
-          toast.success("Two-factor authentication disabled");
+          toast.success(m.security_2fa_disabled_toast());
         },
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "Failed to disable two-factor authentication",
+            ctx.error.message || m.security_2fa_disable_failed(),
           );
         },
       },
@@ -37,12 +38,12 @@ export function DisableTwoFactorDialog(
     <ResponsiveEditDialog
       isOpen={props.isOpen}
       setIsOpen={props.setIsOpen}
-      title="Disable two-factor authentication"
-      description="Enter your password to disable two-factor authentication"
+      title={m.security_2fa_disable_title()}
+      description={m.security_2fa_disable_description()}
     >
       {() => (
         <PasswordForm
-          submitLabel="Disable"
+          submitLabel={m.security_2fa_disable()}
           onSubmit={handlePasswordSubmit}
         />
       )}

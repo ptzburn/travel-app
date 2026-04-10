@@ -1,7 +1,8 @@
 import { Button } from "~/client/components/ui/button.tsx";
 import { useFormContext } from "~/client/hooks/use-app-form.ts";
-
 import { cn } from "~/client/lib/utils.ts";
+
+import * as m from "~/paraglide/messages.js";
 import type { ComponentProps, JSX } from "solid-js";
 import { splitProps } from "solid-js";
 import { Spinner } from "../ui/spinner.tsx";
@@ -41,7 +42,7 @@ export function SubmitButton(props: SubmitButtonProps): JSX.Element {
         >
           {state().isSubmitting
             ? (local.loadingText ?? <Spinner />)
-            : (local.children ?? "Submit")}
+            : (local.children ?? m.common_submit())}
         </Button>
       )}
     </form.Subscribe>

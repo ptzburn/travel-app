@@ -1,8 +1,9 @@
 import * as AlertDialogPrimitive from "@kobalte/core/alert-dialog";
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
-
 import { buttonVariants } from "~/client/components/ui/button.tsx";
+
 import { cn } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 
 import type { JSX, ValidComponent } from "solid-js";
 import { splitProps } from "solid-js";
@@ -73,7 +74,7 @@ const AlertDialogContent = <T extends ValidComponent = "div">(
             <path d="M18 6l-12 12" />
             <path d="M6 6l12 12" />
           </svg>
-          <span class="sr-only">Close</span>
+          <span class="sr-only">{m.a11y_close()}</span>
         </AlertDialogPrimitive.CloseButton>
       </AlertDialogPrimitive.Content>
     </AlertDialogPortal>

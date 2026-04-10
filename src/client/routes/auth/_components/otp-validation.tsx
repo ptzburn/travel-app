@@ -1,6 +1,7 @@
 import { Button } from "~/client/components/ui/button.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createSignal, type JSX, onCleanup, onMount, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import { z } from "zod";
@@ -40,10 +41,10 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
       type: "email-verification",
       fetchOptions: {
         onSuccess: () => {
-          toast.success("OTP sent successfully");
+          toast.success(m.auth_otp_sent());
         },
         onError: (error) => {
-          toast.error(error.error.message || "An error occurred");
+          toast.error(error.error.message || m.auth_error_generic());
         },
       },
     });
@@ -62,7 +63,7 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
     },
     validators: {
       onSubmit: z.object({
-        otp: z.string().length(6, "Invalid OTP"),
+        otp: z.string().length(6, m.auth_invalid_otp()),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -71,12 +72,12 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
         otp: value.otp,
         fetchOptions: {
           onSuccess: () => {
-            toast.success("OTP verified successfully");
+            toast.success(m.auth_otp_verified());
             globalThis.location.href = "/";
           },
           onError: (error) => {
             toast.error(
-              error.error.message || "An error occurred",
+              error.error.message || m.auth_error_generic(),
             );
           },
         },
@@ -88,10 +89,10 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
     <div class="space-y-8">
       <div class="flex flex-col items-center gap-2 text-center">
         <h1 class="font-bold text-2xl">
-          OTP Verification
+          {m.auth_otp_title()}
         </h1>
         <p class="text-balance text-muted-foreground text-sm">
-          Enter the code sent to your email to verify your account.
+          {m.auth_otp_description()}
         </p>
       </div>
       <form
@@ -107,7 +108,7 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
         </otpForm.AppField>
         <div class="flex items-center justify-center gap-1 text-sm">
           <span class="text-muted-foreground">
-            Didn't receive the code?
+            {m.auth_otp_not_received()}
           </span>
           <Button
             variant="link"
@@ -116,12 +117,14 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
             onClick={handleResend}
             disabled={isResending() || cooldown() > 0}
           >
-            {cooldown() > 0 ? `Resend (${cooldown()}s)` : "Resend"}
+            {cooldown() > 0
+              ? m.auth_resend_cooldown({ seconds: String(cooldown()) })
+              : m.auth_resend()}
           </Button>
         </div>
         <otpForm.AppForm>
           <otpForm.SubmitButton>
-            Verify
+            {m.common_verify()}
           </otpForm.SubmitButton>
         </otpForm.AppForm>
         <Show when={props.onBack}>
@@ -131,7 +134,7 @@ export function OTPValidation(props: OTPValidationProps): JSX.Element {
             type="button"
             onClick={() => props.onBack?.()}
           >
-            Back
+            {m.common_back()}
           </Button>
         </Show>
       </form>

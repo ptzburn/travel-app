@@ -6,30 +6,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/client/components/ui/sidebar.tsx";
+import * as m from "~/paraglide/messages.js";
 import Database from "~icons/lucide/database";
 import GlobeLock from "~icons/lucide/globe-lock";
 import Shield from "~icons/lucide/shield";
 import User from "~icons/lucide/user";
 import { For, type JSX } from "solid-js";
 
-const NAV_ITEMS = [
+const getNavItems = () => [
   {
-    label: "Account",
+    label: m.nav_account(),
     icon: User,
     href: "/dashboard/account",
   },
   {
-    label: "Data",
+    label: m.nav_data(),
     icon: Database,
     href: "/dashboard/account/data",
   },
   {
-    label: "Security",
+    label: m.nav_security(),
     icon: Shield,
     href: "/dashboard/account/security",
   },
   {
-    label: "Sessions",
+    label: m.nav_sessions(),
     icon: GlobeLock,
     href: "/dashboard/account/sessions",
   },
@@ -47,10 +48,10 @@ export function AccountNav(): JSX.Element {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Account Settings</SidebarGroupLabel>
+      <SidebarGroupLabel>{m.nav_account_settings()}</SidebarGroupLabel>
       <SidebarMenu>
         <For
-          each={NAV_ITEMS}
+          each={getNavItems()}
         >
           {(item) => (
             <SidebarMenuItem>

@@ -28,6 +28,7 @@ import {
   setLocationLogFilters,
 } from "~/client/stores/location-log-filters.ts";
 import { setMapMode } from "~/client/stores/map-store.ts";
+import * as m from "~/paraglide/messages.js";
 import LucideCirclePlus from "~icons/lucide/circle-plus";
 import NotebookPen from "~icons/lucide/notebook-pen";
 import PlusIcon from "~icons/lucide/plus";
@@ -119,16 +120,16 @@ export default function LocationDetailPage(): JSX.Element {
           {(loc) => (
             <>
               <div class="flex shrink-0 items-center justify-between">
-                <h2>Location Logs</h2>
+                <h2>{m.logs_title()}</h2>
                 <TooltipButton
-                  tooltip="Add Location Log"
+                  tooltip={m.logs_add()}
                   size="icon-lg"
                   variant="ghost"
                   as={A}
                   href={`/dashboard/locations/${loc().slug}/add`}
                 >
                   <LucideCirclePlus class="size-5" />
-                  <span class="sr-only">Add Location Log</span>
+                  <span class="sr-only">{m.logs_add()}</span>
                 </TooltipButton>
               </div>
               <Show
@@ -139,9 +140,9 @@ export default function LocationDetailPage(): JSX.Element {
                       <EmptyMedia variant="icon">
                         <NotebookPen />
                       </EmptyMedia>
-                      <EmptyTitle>No logs yet</EmptyTitle>
+                      <EmptyTitle>{m.logs_empty_title()}</EmptyTitle>
                       <EmptyDescription>
-                        Location logs will appear here once added.
+                        {m.logs_empty_description()}
                       </EmptyDescription>
                     </EmptyHeader>
                     <EmptyContent>
@@ -152,7 +153,7 @@ export default function LocationDetailPage(): JSX.Element {
                         variant="outline"
                       >
                         <PlusIcon />
-                        Add Log
+                        {m.logs_add_short()}
                       </Button>
                     </EmptyContent>
                   </Empty>
@@ -167,9 +168,9 @@ export default function LocationDetailPage(): JSX.Element {
                         <EmptyMedia variant="icon">
                           <SearchIcon />
                         </EmptyMedia>
-                        <EmptyTitle>No matching logs</EmptyTitle>
+                        <EmptyTitle>{m.logs_no_matching_title()}</EmptyTitle>
                         <EmptyDescription>
-                          Try adjusting your search or filters.
+                          {m.logs_no_matching_description()}
                         </EmptyDescription>
                       </EmptyHeader>
                     </Empty>

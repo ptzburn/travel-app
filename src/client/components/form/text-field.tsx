@@ -59,6 +59,7 @@ export function TextField(
         name={field().name}
         type={type}
         placeholder={placeholder}
+        class="bg-card"
         value={displayValue()}
         onBlur={field().handleBlur}
         onChange={handleChange}

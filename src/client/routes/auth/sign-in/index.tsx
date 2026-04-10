@@ -4,6 +4,7 @@ import { Button } from "~/client/components/ui/button.tsx";
 import { Separator } from "~/client/components/ui/separator.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import Fa7BrandsGitHub from "~icons/fa7-brands/github";
 import Fa7BrandsGoogle from "~icons/fa7-brands/google";
 import FingerprintPattern from "~icons/lucide/fingerprint-pattern";
@@ -14,7 +15,7 @@ import SignInForm from "../_components/sign-in-form.tsx";
 function LastUsedBadge(): JSX.Element {
   return (
     <Badge class="absolute -top-2 -right-2 px-1.5 py-0 text-[10px]">
-      Last used
+      {m.auth_last_used()}
     </Badge>
   );
 }
@@ -37,7 +38,7 @@ function SignInPage(): JSX.Element {
         onError: (error) => {
           navigate("/auth/sign-in");
           toast.error(
-            error.error.message || "An error occurred while signing in",
+            error.error.message || m.auth_sign_in_error(),
           );
         },
       },
@@ -55,7 +56,7 @@ function SignInPage(): JSX.Element {
         onError: (error) => {
           navigate("/auth/sign-in");
           toast.error(
-            error.error.message || "An error occurred while signing in",
+            error.error.message || m.auth_sign_in_error(),
           );
         },
       },
@@ -72,7 +73,7 @@ function SignInPage(): JSX.Element {
         },
         onError: (ctx) => {
           toast.error(
-            ctx.error.message || "An error occurred while signing in",
+            ctx.error.message || m.auth_sign_in_error(),
           );
         },
       },
@@ -88,7 +89,7 @@ function SignInPage(): JSX.Element {
     <>
       <div class="space-y-8">
         <div class="flex flex-col items-center gap-2 text-center">
-          <h1 class="font-bold text-2xl">Sign in</h1>
+          <h1 class="font-bold text-2xl">{m.auth_sign_in_title()}</h1>
         </div>
         <Show
           when={!showEmailForm()}
@@ -108,7 +109,7 @@ function SignInPage(): JSX.Element {
               >
                 <Spinner />
               </Show>
-              Sign in with GitHub
+              {m.auth_sign_in_github()}
               <Show when={lastLoginMethod() === "github"}>
                 <LastUsedBadge />
               </Show>
@@ -127,7 +128,7 @@ function SignInPage(): JSX.Element {
               >
                 <Spinner />
               </Show>
-              Sign in with Google
+              {m.auth_sign_in_google()}
               <Show when={lastLoginMethod() === "google"}>
                 <LastUsedBadge />
               </Show>
@@ -146,7 +147,7 @@ function SignInPage(): JSX.Element {
               >
                 <Spinner />
               </Show>
-              Sign in with Passkey
+              {m.auth_sign_in_passkey()}
               <Show when={lastLoginMethod() === "passkey"}>
                 <LastUsedBadge />
               </Show>
@@ -161,7 +162,7 @@ function SignInPage(): JSX.Element {
               onClick={() => setShowEmailForm(true)}
               disabled={isLoading()}
             >
-              Continue with email
+              {m.auth_continue_email()}
               <Show when={lastLoginMethod() === "email"}>
                 <LastUsedBadge />
               </Show>
@@ -170,12 +171,12 @@ function SignInPage(): JSX.Element {
         </Show>
 
         <div class="text-center text-sm">
-          Don't have an account?{"  "}
+          {m.auth_no_account()}{"  "}
           <A
             href="/auth/sign-up"
             class="underline underline-offset-4"
           >
-            Sign up
+            {m.auth_sign_up_link()}
           </A>
         </div>
       </div>

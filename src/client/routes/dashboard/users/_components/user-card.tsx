@@ -15,6 +15,7 @@ import {
 import { authClient } from "~/client/lib/auth-client.ts";
 
 import { getFileUrl, getInitials } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 
 import type { SelectUser } from "~/shared/types/auth.ts";
 import Drama from "~icons/lucide/drama";
@@ -26,9 +27,9 @@ import { toast } from "solid-sonner";
 const getRoleLabel = (role: SelectUser["role"]): string => {
   switch (role) {
     case "user":
-      return "User";
+      return m.users_role_user();
     case "admin":
-      return "Admin";
+      return m.users_role_admin();
   }
 };
 
@@ -85,7 +86,9 @@ export function UserCard(props: UserCardProps): JSX.Element {
         <CardContent class="flex flex-col gap-2">
           <div class="text-muted-foreground text-xs">
             <p>
-              Joined {format(props.user.createdAt, "dd.MM.yyyy")}
+              {m.users_joined({
+                date: format(props.user.createdAt, "dd.MM.yyyy"),
+              })}
             </p>
           </div>
         </CardContent>
@@ -102,7 +105,7 @@ export function UserCard(props: UserCardProps): JSX.Element {
                 <LoaderCircle class="size-4 animate-spin" />
               </Match>
               <Match when={!isImpersonating()}>
-                Impersonate user
+                {m.users_impersonate()}
               </Match>
             </Switch>
           </Button>

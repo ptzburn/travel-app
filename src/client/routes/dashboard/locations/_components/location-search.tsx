@@ -27,6 +27,7 @@ import {
 } from "~/client/components/ui/text-field.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { getSearchResultsQuery } from "~/client/queries/search.ts";
+import * as m from "~/paraglide/messages.js";
 import { SearchSchema } from "~/shared/schemas/zod.ts";
 import type { NominatimResult } from "~/shared/types/search.ts";
 
@@ -64,7 +65,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
       onSubmit: SearchSchema,
     },
     onSubmitInvalid: () => {
-      toast.error("Enter a search term");
+      toast.error(m.map_search_error());
     },
     onSubmit: async ({ value }) => {
       try {
@@ -72,7 +73,9 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
         const result = await getSearchResultsQuery(value);
         setSearchResults(result);
       } catch (error) {
-        const message = Error.isError(error) ? error.message : "Unknown error";
+        const message = Error.isError(error)
+          ? error.message
+          : m.map_unknown_error();
         setErrorMessage(message);
         toast.error(message);
       }
@@ -112,7 +115,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
                   <InputGroup>
                     <InputGroupInput
                       name={field().name}
-                      placeholder="Search for a location..."
+                      placeholder={m.map_search_placeholder()}
                       value={field().state.value}
                       onInput={(e) =>
                         field().handleChange(e.currentTarget.value)}
@@ -164,7 +167,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
                           </ItemContent>
                           <ItemActions>
                             <Button variant="outline" size="sm" disabled>
-                              Set Location
+                              {m.map_set_location()}
                               <Spinner />
                             </Button>
                           </ItemActions>
@@ -194,7 +197,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
                       size="sm"
                       onClick={() => handleSetLocation(result)}
                     >
-                      Set Location
+                      {m.map_set_location()}
                       <MapPinPlus />
                     </Button>
                   </ItemActions>
@@ -218,9 +221,9 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
             <EmptyMedia variant="icon">
               <MapPinOff />
             </EmptyMedia>
-            <EmptyTitle>No locations found</EmptyTitle>
+            <EmptyTitle>{m.map_no_locations()}</EmptyTitle>
             <EmptyDescription>
-              Please try with another term.
+              {m.map_no_locations_description()}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

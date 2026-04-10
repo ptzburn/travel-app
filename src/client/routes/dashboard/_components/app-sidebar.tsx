@@ -20,9 +20,10 @@ import {
   isLocationRoute,
 } from "~/client/routes/dashboard.tsx";
 import { AccountNav } from "~/client/routes/dashboard/_components/account-nav.tsx";
+import * as m from "~/paraglide/messages.js";
 import ChevronLeftIcon from "~icons/lucide/chevron-left";
 import ChevronRightIcon from "~icons/lucide/chevron-right";
-import PlaneIcon from "~icons/lucide/plane";
+
 import UsersIcon from "~icons/lucide/users";
 import { createEffect, type JSX, Match, on, Show } from "solid-js";
 import { Switch } from "solid-js";
@@ -53,11 +54,13 @@ export function AppSidebar(): JSX.Element {
         <SidebarMenu>
           <SidebarMenuItem>
             <A href="/dashboard">
-              <SidebarMenuButton size="lg" tooltip="Travel App">
-                <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <PlaneIcon class="size-4" />
-                </div>
-                <span class="truncate font-semibold">Travel App</span>
+              <SidebarMenuButton size="lg" tooltip="Carte">
+                <img
+                  src="/icon.png"
+                  alt="Carte"
+                  class="size-8 rounded-lg"
+                />
+                <span class="truncate font-semibold text-lg">Carte</span>
               </SidebarMenuButton>
             </A>
           </SidebarMenuItem>
@@ -80,7 +83,7 @@ export function AppSidebar(): JSX.Element {
           <AccountNav />
         </Show>
         <SidebarGroup>
-          <SidebarGroupLabel>Admin</SidebarGroupLabel>
+          <SidebarGroupLabel>{m.nav_admin()}</SidebarGroupLabel>
           <SidebarMenu>
             <Show when={session.user.role === "admin"}>
               <Collapsible>
@@ -90,9 +93,9 @@ export function AppSidebar(): JSX.Element {
                       ? "bg-accent rounded"
                       : ""}
                   >
-                    <SidebarMenuButton tooltip="Users">
+                    <SidebarMenuButton tooltip={m.nav_users()}>
                       <UsersIcon />
-                      <span>Users</span>
+                      <span>{m.nav_users()}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </A>

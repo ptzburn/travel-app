@@ -6,15 +6,16 @@ import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
 
 import { getUserByIdQuery } from "~/client/queries/users.ts";
+import * as m from "~/paraglide/messages.js";
 import type { SelectUser } from "~/shared/types/auth.ts";
 import { createEffect, createMemo } from "solid-js";
 import type { Accessor, JSX } from "solid-js";
 import { toast } from "solid-sonner";
 
-const ROLE_OPTIONS = ["user", "admin"].map((r) => ({
-  value: r,
-  label: r.charAt(0).toUpperCase() + r.slice(1),
-}));
+const getRoleOptions = () => [
+  { value: "user", label: m.users_role_user() },
+  { value: "admin", label: m.users_role_admin() },
+];
 
 type RoleDialogProps = {
   user: Accessor<SelectUser>;
@@ -23,7 +24,7 @@ type RoleDialogProps = {
 };
 
 export function RoleDialog(props: RoleDialogProps): JSX.Element {
-  const roleOptions = createMemo(() => ROLE_OPTIONS);
+  const roleOptions = createMemo(() => getRoleOptions());
 
   const form = useAppForm(() => ({
     defaultValues: {
@@ -40,10 +41,10 @@ export function RoleDialog(props: RoleDialogProps): JSX.Element {
           onSuccess: () => {
             revalidate(getUserByIdQuery.keyFor(props.user().id));
             props.setIsOpen(false);
-            toast.success("Role updated");
+            toast.success(m.users_role_updated());
           },
           onError: (error) => {
-            toast.error(error.error?.message ?? "Failed to update role");
+            toast.error(error.error?.message ?? m.users_role_update_failed());
           },
         },
       );
@@ -62,8 +63,8 @@ export function RoleDialog(props: RoleDialogProps): JSX.Element {
     <ResponsiveEditDialog
       isOpen={props.isOpen}
       setIsOpen={props.setIsOpen}
-      title="Change role"
-      description="Select a new role for this user."
+      title={m.users_change_role()}
+      description={m.users_change_role_description()}
     >
       {() => (
         <form
@@ -78,15 +79,15 @@ export function RoleDialog(props: RoleDialogProps): JSX.Element {
             <form.AppField name="role">
               {(field) => (
                 <field.SelectField
-                  label="Role"
-                  placeholder="Select role"
+                  label={m.users_role_label()}
+                  placeholder={m.users_role_placeholder()}
                   options={roleOptions()}
                 />
               )}
             </form.AppField>
           </FieldGroup>
           <form.AppForm>
-            <form.SubmitButton>Save</form.SubmitButton>
+            <form.SubmitButton>{m.common_save()}</form.SubmitButton>
           </form.AppForm>
         </form>
       )}

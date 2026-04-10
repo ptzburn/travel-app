@@ -1,8 +1,9 @@
 import * as PaginationPrimitive from "@kobalte/core/pagination";
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
-
 import { buttonVariants } from "~/client/components/ui/button.tsx";
+
 import { cn } from "~/client/lib/utils.ts";
+import * as m from "~/paraglide/messages.js";
 
 import type { JSX, ValidComponent } from "solid-js";
 import { Show, splitProps } from "solid-js";
@@ -81,7 +82,7 @@ const PaginationEllipsis = <T extends ValidComponent = "div">(
         <circle cx="19" cy="12" r="1" />
         <circle cx="5" cy="12" r="1" />
       </svg>
-      <span class="sr-only">More pages</span>
+      <span class="sr-only">{m.a11y_more_pages()}</span>
     </PaginationPrimitive.Ellipsis>
   );
 };
@@ -127,7 +128,7 @@ const PaginationPrevious = <T extends ValidComponent = "button">(
             >
               <path d="M15 6l-6 6l6 6" />
             </svg>
-            <span>Previous</span>
+            <span>{m.a11y_previous()}</span>
           </>
         }
       >
@@ -166,7 +167,7 @@ const PaginationNext = <T extends ValidComponent = "button">(
         when={local.children}
         fallback={
           <>
-            <span>Next</span>
+            <span>{m.a11y_next()}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

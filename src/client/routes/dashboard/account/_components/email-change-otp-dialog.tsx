@@ -11,6 +11,7 @@ import {
 } from "~/client/components/ui/dialog.tsx";
 import { useAppForm } from "~/client/hooks/use-app-form.ts";
 import { authClient } from "~/client/lib/auth-client.ts";
+import * as m from "~/paraglide/messages.js";
 import { createEffect, createSignal, type JSX, on } from "solid-js";
 import { toast } from "solid-sonner";
 import { z } from "zod";
@@ -43,10 +44,10 @@ export function EmailChangeOTPDialog(
       newEmail,
     }, {
       onSuccess: () => {
-        toast.success("Code sent to the new email");
+        toast.success(m.account_email_code_sent());
       },
       onError: () => {
-        toast.error("Failed to send code to the new email");
+        toast.error(m.account_verify_resend_failed());
       },
     });
   };
@@ -62,7 +63,7 @@ export function EmailChangeOTPDialog(
     },
     validators: {
       onSubmit: z.object({
-        otp: z.string().length(6, "Invalid verification code"),
+        otp: z.string().length(6, m.account_verify_invalid_code()),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -73,14 +74,14 @@ export function EmailChangeOTPDialog(
         otp: value.otp,
         fetchOptions: {
           onSuccess: () => {
-            toast.success("Email changed");
+            toast.success(m.account_email_changed());
             handleClose();
             void revalidate("session");
           },
           onError: (error) => {
             toast.error(
               error.error.message ||
-                "Failed to change email",
+                m.account_email_change_failed(),
             );
           },
         },
@@ -107,9 +108,9 @@ export function EmailChangeOTPDialog(
           class="space-y-6"
         >
           <DialogHeader>
-            <DialogTitle>Verify your email</DialogTitle>
+            <DialogTitle>{m.account_verify_email_title()}</DialogTitle>
             <DialogDescription>
-              Enter the code sent to your new email to verify your account.
+              {m.account_verify_email_description()}
             </DialogDescription>
           </DialogHeader>
 
@@ -120,7 +121,7 @@ export function EmailChangeOTPDialog(
           <DialogFooter class="flex-col gap-2 sm:flex-col">
             <form.AppForm>
               <form.SubmitButton>
-                Verify
+                {m.common_verify()}
               </form.SubmitButton>
             </form.AppForm>
             <Button
@@ -132,7 +133,7 @@ export function EmailChangeOTPDialog(
                 }
               }}
             >
-              Resend code
+              {m.account_verify_resend()}
             </Button>
           </DialogFooter>
         </form>
