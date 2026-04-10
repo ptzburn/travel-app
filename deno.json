@@ -4,7 +4,7 @@
     "dev:app": "deno run --allow-env --allow-sys --allow-ffi --env-file --allow-net --allow-read --allow-write --allow-run vite --port 3040",
     "build": "deno run --allow-env --allow-read --allow-sys --allow-run --allow-ffi --env-file=.env.prod --allow-write vite build",
     "dev": "concurrently \"deno task dev:app\" \"docker compose up\"",
-    "start": "deno run --allow-net --allow-read --allow-write --allow-ffi --allow-env --env-file=.env.prod --allow-sys ./.output/server/index.mjs",
+    "start": "deno run --allow-net --allow-read --allow-write --allow-ffi --allow-env --env-file=.env.prod --allow-sys --unstable-bare-node-builtins ./.output/server/index.mjs",
     "db:generate": "deno -A --env-file npm:drizzle-kit@^1.0.0-beta.18-7eb39f0 generate",
     "db:migrate": "deno -A --env-file npm:drizzle-kit@^1.0.0-beta.18-7eb39f0 migrate",
     "db:studio": "deno -A --env-file --node-modules-dir npm:drizzle-kit@^1.0.0-beta.18-7eb39f0 studio --port 8000",
