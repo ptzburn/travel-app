@@ -85,18 +85,18 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
   };
 
   return (
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+    <div class="flex flex-col gap-2">
       <TextField class="flex-1" value={search()} onChange={handleSearchInput}>
         <div class="relative">
           <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <TextFieldInput
             placeholder={m.locations_search_placeholder()}
-            class="pl-9"
+            class="h-8 pl-9 text-sm"
           />
         </div>
       </TextField>
 
-      <div class="flex items-end gap-2">
+      <div class="flex items-center gap-1.5">
         <Select
           value={sortBy()}
           onChange={(value) => {
@@ -113,8 +113,11 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
             </SelectItem>
           )}
         >
-          <SelectTrigger class="w-[150px]" aria-label={m.locations_sort_by()}>
-            <ArrowUpDown class="mr-1 size-4 shrink-0 text-muted-foreground" />
+          <SelectTrigger
+            class="h-7 min-w-0 flex-1 text-xs"
+            aria-label={m.locations_sort_by()}
+          >
+            <ArrowUpDown class="mr-1 size-3 shrink-0 text-muted-foreground" />
             <SelectValue<SortByOption>>
               {(state) => getLabel(state.selectedOption(), getSortByOptions())}
             </SelectValue>
@@ -139,7 +142,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
           )}
         >
           <SelectTrigger
-            class="w-[140px]"
+            class="h-7 min-w-0 flex-1 text-xs"
             aria-label={m.locations_sort_direction()}
           >
             <SelectValue<SortDirection>>
@@ -155,9 +158,10 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
             variant="ghost"
             size="icon"
             onClick={handleClear}
+            class="size-7 shrink-0"
             aria-label={m.locations_clear_filters()}
           >
-            <XIcon class="size-4" />
+            <XIcon class="size-3.5" />
           </Button>
         </Show>
       </div>

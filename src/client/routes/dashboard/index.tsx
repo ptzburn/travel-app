@@ -8,16 +8,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/client/components/ui/empty.tsx";
-import {
-  Pagination,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationItems,
-  PaginationNext,
-  PaginationPrevious,
-} from "~/client/components/ui/pagination.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
-import { TooltipButton } from "~/client/components/ui/tooltip-button.tsx";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
 import {
   type LocationFilters,
@@ -31,8 +22,6 @@ import MapPinIcon from "~icons/lucide/map-pin";
 import PlusIcon from "~icons/lucide/plus";
 import {
   createEffect,
-  createMemo,
-  createSignal,
   For,
   type JSX,
   onCleanup,
@@ -42,8 +31,6 @@ import {
 } from "solid-js";
 import { LocationCard } from "./_components/location-card.tsx";
 import { LocationSearch } from "./_components/location-search.tsx";
-
-const ITEMS_PER_PAGE = 3;
 
 export default function DashboardPage(): JSX.Element {
   const locations = createAsync(
@@ -58,21 +45,11 @@ export default function DashboardPage(): JSX.Element {
     { initialValue: [] },
   );
 
-  const [page, setPage] = createSignal(1);
-  const totalPages = createMemo(() =>
-    Math.max(1, Math.ceil(locations().length / ITEMS_PER_PAGE))
-  );
-  const paginatedLocations = createMemo(() => {
-    const start = (page() - 1) * ITEMS_PER_PAGE;
-    return locations().slice(start, start + ITEMS_PER_PAGE);
-  });
-
   const [isPending, startTransition] = useTransition();
 
   const handleFilterChange = (newFilters: LocationFilters) => {
     startTransition(() => {
       setLocationFilters(newFilters);
-      setPage(1);
     });
   };
 
@@ -89,91 +66,77 @@ export default function DashboardPage(): JSX.Element {
   onCleanup(() => setMapMode({ mode: "view", locations: [] }));
 
   return (
-    <div class="flex min-h-0 flex-1 flex-col gap-6">
-      <div class="flex items-center justify-between">
-        <h2>{m.locations_title()}</h2>
-        <TooltipButton
-          tooltip={m.locations_add()}
-          size="icon-lg"
-          variant="ghost"
-          as={A}
-          href="/dashboard/locations/add"
+    <div class="pointer-events-auto flex h-full max-h-full w-[380px] flex-col py-2 pr-2 md:hidden">
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-l-none rounded-r-lg border border-l-0 border-sidebar-border/50 bg-background/70 shadow-lg backdrop-blur-xl">
+        <div class="flex items-center justify-between border-b px-4 pt-3 pb-3">
+          <h2 class="font-semibold text-base">{m.locations_title()}</h2>
+          <Button
+            as={A}
+            href="/dashboard/locations/add"
+            size="icon-sm"
+            variant="ghost"
+            class="size-7"
+          >
+            <LucideCirclePlus class="size-4" />
+            <span class="sr-only">{m.locations_add()}</span>
+          </Button>
+        </div>
+
+        <div class="border-b px-4 py-3">
+          <LocationSearch onFilterChange={handleFilterChange} />
+        </div>
+
+        <Suspense
+          fallback={
+            <div class="flex flex-1 items-center justify-center py-8">
+              <Spinner class="size-6" />
+            </div>
+          }
         >
-          <LucideCirclePlus class="size-5" />
-          <span class="sr-only">{m.locations_add()}</span>
-        </TooltipButton>
-      </div>
-
-      <LocationSearch onFilterChange={handleFilterChange} />
-
-      <Suspense
-        fallback={
-          <div class="flex flex-1 items-center justify-center">
-            <Spinner class="size-8" />
-          </div>
-        }
-      >
-        <Show when={locations()}>
-          {(locs) => (
-            <Show
-              when={locs().length > 0}
-              fallback={
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <MapPinIcon />
-                    </EmptyMedia>
-                    <EmptyTitle>{m.locations_empty_title()}</EmptyTitle>
-                    <EmptyDescription>
-                      {m.locations_empty_description()}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
-                    <Button
-                      as={A}
-                      href="/dashboard/locations/add"
-                      size="sm"
-                      variant="outline"
-                    >
-                      <PlusIcon />
-                      {m.locations_add()}
-                    </Button>
-                  </EmptyContent>
-                </Empty>
-              }
-            >
-              <div
-                class="flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity"
-                classList={{ "opacity-50": isPending() }}
+          <Show when={locations()}>
+            {(locs) => (
+              <Show
+                when={locs().length > 0}
+                fallback={
+                  <Empty class="py-8">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <MapPinIcon />
+                      </EmptyMedia>
+                      <EmptyTitle>{m.locations_empty_title()}</EmptyTitle>
+                      <EmptyDescription>
+                        {m.locations_empty_description()}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button
+                        as={A}
+                        href="/dashboard/locations/add"
+                        size="sm"
+                        variant="outline"
+                      >
+                        <PlusIcon />
+                        {m.locations_add()}
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
+                }
               >
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <For each={paginatedLocations()}>
-                    {(loc) => <LocationCard location={loc} />}
-                  </For>
+                <div
+                  class="flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity"
+                  classList={{ "opacity-50": isPending() }}
+                >
+                  <div class="flex flex-col">
+                    <For each={locations()}>
+                      {(loc) => <LocationCard location={loc} />}
+                    </For>
+                  </div>
                 </div>
-                <Show when={totalPages() > 1}>
-                  <Pagination
-                    count={totalPages()}
-                    page={page()}
-                    onPageChange={setPage}
-                    itemComponent={(props) => (
-                      <PaginationItem page={props.page}>
-                        {props.page}
-                      </PaginationItem>
-                    )}
-                    ellipsisComponent={() => <PaginationEllipsis />}
-                    class="mt-auto pt-6 [&>*]:justify-center"
-                  >
-                    <PaginationPrevious />
-                    <PaginationItems />
-                    <PaginationNext />
-                  </Pagination>
-                </Show>
-              </div>
-            </Show>
-          )}
-        </Show>
-      </Suspense>
+              </Show>
+            )}
+          </Show>
+        </Suspense>
+      </div>
     </div>
   );
 }

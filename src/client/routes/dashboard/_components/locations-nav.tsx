@@ -34,33 +34,35 @@ export function LocationsNav(): JSX.Element {
     <SidebarGroup>
       <SidebarGroupLabel>{m.nav_locations()}</SidebarGroupLabel>
       <SidebarMenu>
-        <A href="/dashboard/locations/add">
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip={m.nav_add_location()}>
-              <PlusIcon />
-              <span class="truncate">{m.nav_add_location()}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </A>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            as={A}
+            href="/dashboard/locations/add"
+            tooltip={m.nav_add_location()}
+          >
+            <PlusIcon />
+            <span class="truncate">{m.nav_add_location()}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
         <Suspense>
           <Show when={locations()} fallback={null}>
             {(locs) => (
               <For each={locs()}>
                 {(loc) => (
-                  <A href={`/dashboard/locations/${loc.slug}`}>
-                    <SidebarMenuItem
-                      onMouseEnter={() => setHoveredSlug(loc.slug)}
-                      onMouseLeave={() => setHoveredSlug(null)}
+                  <SidebarMenuItem
+                    onMouseEnter={() => setHoveredSlug(loc.slug)}
+                    onMouseLeave={() => setHoveredSlug(null)}
+                  >
+                    <SidebarMenuButton
+                      as={A}
+                      href={`/dashboard/locations/${loc.slug}`}
+                      tooltip={loc.name}
+                      isActive={isActive(loc.slug)}
                     >
-                      <SidebarMenuButton
-                        tooltip={loc.name}
-                        isActive={isActive(loc.slug)}
-                      >
-                        <MapPinIcon />
-                        <span class="truncate">{loc.name}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </A>
+                      <MapPinIcon />
+                      <span class="truncate">{loc.name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 )}
               </For>
             )}

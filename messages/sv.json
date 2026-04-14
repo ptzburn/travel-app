@@ -119,6 +119,7 @@
   "nav_data": "Data",
   "nav_security": "Säkerhet",
   "nav_sessions": "Sessioner",
+  "nav_search": "Sök",
   "nav_locations": "Platser",
   "nav_add_location": "Lägg till plats",
   "nav_location_logs": "Platsloggar",
@@ -395,6 +396,8 @@
 
   "a11y_loading": "Laddar",
   "a11y_toggle_sidebar": "Växla sidofält",
+  "a11y_sidebar_expand": "Expandera",
+  "a11y_sidebar_collapse": "Fäll ihop",
   "a11y_more_pages": "Fler sidor",
   "a11y_previous": "Föregående",
   "a11y_next": "Nästa",

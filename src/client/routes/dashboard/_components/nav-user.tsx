@@ -26,7 +26,6 @@ import * as m from "~/paraglide/messages.js";
 import ChevronsUpDown from "~icons/lucide/chevrons-up-down";
 import LogOut from "~icons/lucide/log-out";
 import Moon from "~icons/lucide/moon";
-
 import Sun from "~icons/lucide/sun";
 import User from "~icons/lucide/user";
 import { type JSX, Show } from "solid-js";
@@ -63,17 +62,17 @@ export function NavUser(): JSX.Element {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger class="w-full">
+          <DropdownMenuTrigger>
             <SidebarMenuButton
               size="lg"
-              class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              class="md:h-8 md:p-0 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar class="h-8 w-8 rounded-full">
                 <AvatarImage
                   src={getFileUrl(session.user.image)}
                   alt={session.user.name}
                 />
-                <AvatarFallback class="rounded-lg">
+                <AvatarFallback class="rounded-full">
                   {getInitials(session.user.name)}
                 </AvatarFallback>
               </Avatar>
@@ -84,7 +83,7 @@ export function NavUser(): JSX.Element {
               <ChevronsUpDown class="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent class="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg">
+          <DropdownMenuContent class="z-10 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg">
             <DropdownMenuItem
               as={A}
               href="/dashboard/account"

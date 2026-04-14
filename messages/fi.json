@@ -119,6 +119,7 @@
   "nav_data": "Tiedot",
   "nav_security": "Turvallisuus",
   "nav_sessions": "Istunnot",
+  "nav_search": "Haku",
   "nav_locations": "Sijainnit",
   "nav_add_location": "Lisää sijainti",
   "nav_location_logs": "Sijaintimerkinnät",
@@ -395,6 +396,8 @@
 
   "a11y_loading": "Ladataan",
   "a11y_toggle_sidebar": "Vaihda sivupalkki",
+  "a11y_sidebar_expand": "Laajenna",
+  "a11y_sidebar_collapse": "Kutista",
   "a11y_more_pages": "Lisää sivuja",
   "a11y_previous": "Edellinen",
   "a11y_next": "Seuraava",

@@ -34,6 +34,7 @@ const EnvSchema = z.object({
   S3_ACCESS_SECRET: z.string(),
   S3_BUCKET: z.string(),
   VITE_S3_PUBLIC_URL: z.url(),
+  VITE_GITHUB_REPO_URL: z.url(),
   CONTACT_EMAIL: z.email(),
 });
 

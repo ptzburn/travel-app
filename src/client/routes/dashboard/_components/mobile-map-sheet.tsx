@@ -8,7 +8,6 @@ const EXPANDED = 1;
 
 type MobileMapSheetProps = {
   children: JSX.Element;
-  isEditRoute: boolean;
 };
 
 export default function MobileMapSheet(
@@ -40,7 +39,7 @@ export default function MobileMapSheet(
           if (mapMode().mode === "pick") {
             animateToSnapPoint(COLLAPSED);
             setExpanded(false);
-          } else if (props.isEditRoute) {
+          } else {
             animateToSnapPoint(EXPANDED);
             setExpanded(true);
           }

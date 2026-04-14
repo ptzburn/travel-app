@@ -32,14 +32,12 @@ export function NavMain(): JSX.Element {
         <SidebarGroup>
           <SidebarMenu>
             <Collapsible>
-              <A href={url()}>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip={m.nav_back()}>
-                    <ArrowLeftIcon />
-                    <span>{m.nav_back()}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </A>
+              <SidebarMenuItem>
+                <SidebarMenuButton as={A} href={url()} tooltip={m.nav_back()}>
+                  <ArrowLeftIcon />
+                  <span>{m.nav_back()}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </Collapsible>
           </SidebarMenu>
         </SidebarGroup>

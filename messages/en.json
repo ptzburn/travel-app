@@ -119,6 +119,7 @@
   "nav_data": "Data",
   "nav_security": "Security",
   "nav_sessions": "Sessions",
+  "nav_search": "Search",
   "nav_locations": "Locations",
   "nav_add_location": "Add Location",
   "nav_location_logs": "Location Logs",
@@ -395,6 +396,8 @@
 
   "a11y_loading": "Loading",
   "a11y_toggle_sidebar": "Toggle Sidebar",
+  "a11y_sidebar_expand": "Expand",
+  "a11y_sidebar_collapse": "Collapse",
   "a11y_more_pages": "More pages",
   "a11y_previous": "Previous",
   "a11y_next": "Next",

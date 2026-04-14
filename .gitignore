@@ -5,6 +5,8 @@ dist
 .netlify
 .vite
 .nitro
+.agents
+skills-lock.json
 vite.config.ts.timestamp-*.mjs
 
 # Environment

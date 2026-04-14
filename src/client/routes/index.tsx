@@ -192,7 +192,7 @@ export default function LandingPage(): JSX.Element {
         <footer class="border-t py-6 text-center text-muted-foreground text-sm">
           {m.landing_built_by()}{" "}
           <a
-            href="https://github.com/ptzburn"
+            href={import.meta.env.VITE_GITHUB_REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
             class="underline underline-offset-4 transition-colors hover:text-foreground"

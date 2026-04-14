@@ -1,10 +1,4 @@
 import { A } from "@solidjs/router";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "~/client/components/ui/card.tsx";
 import { LocationActions } from "~/client/routes/dashboard/locations/_components/location-actions.tsx";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
 import type { LocationResponse } from "~/shared/types/locations.ts";
@@ -14,40 +8,28 @@ export function LocationCard(
   props: { location: LocationResponse },
 ): JSX.Element {
   return (
-    <A href={`/dashboard/locations/${props.location.slug}`} class="contents">
-      <Card
-        class={`cursor-pointer transition-colors hover:bg-accent/50 ${
-          hoveredSlug() === props.location.slug
-            ? "border-primary ring-primary/20 ring-2"
-            : ""
-        }`}
-        onMouseEnter={() =>
-          setHoveredSlug(props.location.slug)}
-        onMouseLeave={() =>
-          setHoveredSlug(null)}
-      >
-        <CardHeader>
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0 flex-1">
-              <CardTitle>{props.location.name}</CardTitle>
-            </div>
-            <LocationActions
-              slug={props.location.slug}
-              name={props.location.name}
-              class="-mt-1 -mr-2 shrink-0"
-            />
-          </div>
-        </CardHeader>
+    <A
+      href={`/dashboard/locations/${props.location.slug}`}
+      class="group flex items-center gap-3 border-b px-4 py-3 transition-colors hover:bg-accent/50"
+      classList={{
+        "bg-accent/30": hoveredSlug() === props.location.slug,
+      }}
+      onMouseEnter={() => setHoveredSlug(props.location.slug)}
+      onMouseLeave={() => setHoveredSlug(null)}
+    >
+      <div class="min-w-0 flex-1">
+        <p class="truncate font-medium text-sm">{props.location.name}</p>
         <Show when={props.location.description}>
           {(desc) => (
-            <CardContent>
-              <p class="line-clamp-2 text-muted-foreground text-sm">
-                {desc()}
-              </p>
-            </CardContent>
+            <p class="truncate text-muted-foreground text-xs">{desc()}</p>
           )}
         </Show>
-      </Card>
+      </div>
+      <LocationActions
+        slug={props.location.slug}
+        name={props.location.name}
+        class="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+      />
     </A>
   );
 }
