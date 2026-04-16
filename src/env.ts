@@ -36,6 +36,10 @@ const EnvSchema = z.object({
   VITE_S3_PUBLIC_URL: z.url(),
   VITE_GITHUB_REPO_URL: z.url(),
   CONTACT_EMAIL: z.email(),
+  MAPBOX_BASE_URL: z.url().default(
+    "https://api.mapbox.com/search/searchbox/v1",
+  ),
+  MAPBOX_ACCESS_TOKEN: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;

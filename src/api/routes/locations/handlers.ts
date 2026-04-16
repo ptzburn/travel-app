@@ -26,13 +26,9 @@ export const get: AppRouteHandler<GetRoute> = async (
   c: HandlerContext<GetRoute>,
 ): HandlerReturn<GetRoute> => {
   const user = c.get("user");
-  const { search, sortBy, sortDirection } = c.req.valid("query");
+  const { search } = c.req.valid("query");
 
-  const locations = await findLocations(Number(user.id), {
-    search,
-    sortBy,
-    sortDirection,
-  });
+  const locations = await findLocations(Number(user.id), { search });
 
   return c.json(locations, OK.CODE);
 };

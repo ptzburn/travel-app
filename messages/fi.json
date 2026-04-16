@@ -437,5 +437,7 @@
   "avatar_upload_too_large": "Kuva on liian suuri (max 10 Mt)",
   "avatar_upload_success": "Profiilikuva päivitetty",
   "avatar_upload_failed": "Profiilikuvan päivitys epäonnistui",
-  "account_language": "Kieli"
+  "account_language": "Kieli",
+  "search_your_locations": "Omat sijainnit",
+  "search_global_results": "Hakutulokset"
 }

@@ -20,8 +20,6 @@ export function LocationsNav(): JSX.Element {
     const f = locationFilters();
     return getLocationsQuery({
       search: f.search || undefined,
-      sortBy: f.sortBy,
-      sortDirection: f.sortDirection,
     });
   });
   const location = useLocation();

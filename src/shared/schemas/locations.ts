@@ -27,8 +27,4 @@ export const UpdateLocation = InsertLocation.partial();
 
 export const LocationQueryParams = z.object({
   search: z.string().optional(),
-  sortBy: z.enum(["name", "createdAt", "updatedAt"]).optional().default(
-    "createdAt",
-  ),
-  sortDirection: z.enum(["asc", "desc"]).optional().default("desc"),
 });

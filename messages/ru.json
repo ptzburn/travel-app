@@ -437,5 +437,7 @@
   "avatar_upload_too_large": "Изображение слишком большое (макс. 10 МБ)",
   "avatar_upload_success": "Фото профиля обновлено",
   "avatar_upload_failed": "Не удалось обновить фото профиля",
-  "account_language": "Язык"
+  "account_language": "Язык",
+  "search_your_locations": "Ваши места",
+  "search_global_results": "Результаты поиска"
 }

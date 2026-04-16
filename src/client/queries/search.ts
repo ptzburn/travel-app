@@ -1,10 +1,16 @@
-import { query } from "@solidjs/router";
 import { rpcClient } from "~/shared/rpc-client.ts";
-import type { SearchQuery } from "~/shared/types/search.ts";
+import type {
+  MapboxFeature,
+  MapboxSuggestion,
+  RetrieveQuery,
+  SuggestQuery,
+} from "~/shared/types/search.ts";
 
-export const getSearchResultsQuery = query(async (query: SearchQuery) => {
-  const response = await rpcClient.search.$get({
-    query,
+export async function getSuggestionsQuery(
+  params: SuggestQuery,
+): Promise<MapboxSuggestion[]> {
+  const response = await rpcClient.search.suggest.$get({
+    query: params,
   });
 
   if (!response.ok) {
@@ -16,4 +22,23 @@ export const getSearchResultsQuery = query(async (query: SearchQuery) => {
   }
 
   return await response.json();
-}, "search");
+}
+
+export async function getRetrieveQuery(
+  params: RetrieveQuery & { id: string },
+): Promise<MapboxFeature> {
+  const response = await rpcClient.search.retrieve[":id"].$get({
+    param: { id: params.id },
+    query: { session_token: params.session_token },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    if ("error" in error) {
+      throw new Error(error.error.issues[0].message);
+    }
+    throw new Error(error.message);
+  }
+
+  return await response.json();
+}

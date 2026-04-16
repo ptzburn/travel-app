@@ -18,6 +18,7 @@ import {
   Switch,
 } from "solid-js";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar.tsx";
+import { SearchPanel } from "./dashboard/_components/search-panel.tsx";
 
 const Map = clientOnly(() =>
   import("~/client/routes/dashboard/_components/map.tsx")
@@ -62,6 +63,7 @@ export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
               >
                 <SidebarProvider style={{ "--sidebar-width": "12rem" }}>
                   <AppSidebar />
+                  <SearchPanel />
                   <SidebarInset>
                     <MobileHeader />
                     <Switch>
@@ -83,10 +85,14 @@ export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
                           <div class="fixed inset-0 z-0">
                             <Map />
                           </div>
-                          <div class="pointer-events-none absolute inset-0 z-10">
-                            {props.children}
-                          </div>
                         </div>
+                      </Match>
+                      <Match
+                        when={location.pathname.startsWith(
+                          "/dashboard/account",
+                        )}
+                      >
+                        {props.children}
                       </Match>
                     </Switch>
                   </SidebarInset>

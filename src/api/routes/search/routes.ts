@@ -5,39 +5,46 @@ import createErrorSchema from "~/api/utils/open-api-schemas/create-error.schema.
 import serverErrorSchema from "~/api/utils/open-api-schemas/server-error.schema.ts";
 import unauthorizedSchema from "~/api/utils/open-api-schemas/unauthorized.schema.ts";
 import * as HttpStatus from "~/shared/http-status.ts";
-import { NominatimResultSchema, SearchSchema } from "~/shared/schemas/zod.ts";
+import {
+  MapboxFeatureSchema,
+  MapboxSuggestionSchema,
+  RetrieveQuerySchema,
+  SuggestQuerySchema,
+} from "~/shared/schemas/search.ts";
+import { RetrieveParamsSchema } from "~/shared/schemas/zod.ts";
 import { cache } from "hono/cache";
 
 const tags = ["Search"];
 
-export const get = createRoute({
-  summary: "GET endpoint for fetching points of interest on the map",
-  description: "Fetches points of interest on the map by query",
+export const suggest = createRoute({
+  summary: "GET endpoint for fetching search suggestions",
+  description:
+    "Returns autocomplete suggestions from Mapbox Search Box API for the given query",
   tags,
   method: "get",
-  path: "/search",
+  path: "/search/suggest",
   middleware: [
     authMiddleware,
     cache({
-      cacheName: "search-nominatim",
+      cacheName: "search-suggest",
       cacheControl: "max-age=3600",
       wait: true,
     }),
   ],
   request: {
-    query: SearchSchema,
+    query: SuggestQuerySchema,
   },
   responses: {
     [HttpStatus.OK.CODE]: jsonContent(
-      z.array(NominatimResultSchema),
-      "Schema of the nominatim location results",
+      z.array(MapboxSuggestionSchema),
+      "Array of Mapbox search suggestions",
     ),
     [HttpStatus.UNAUTHORIZED.CODE]: jsonContent(
       unauthorizedSchema,
       "Unauthorized",
     ),
     [HttpStatus.UNPROCESSABLE_ENTITY.CODE]: jsonContent(
-      createErrorSchema(SearchSchema),
+      createErrorSchema(SuggestQuerySchema),
       "Validation error(s)",
     ),
     [HttpStatus.INTERNAL_SERVER_ERROR.CODE]: jsonContent(
@@ -46,9 +53,57 @@ export const get = createRoute({
     ),
     [HttpStatus.GATEWAY_TIMEOUT.CODE]: jsonContent(
       serverErrorSchema,
-      "Internal server error",
+      "Gateway timeout",
     ),
   },
 });
 
-export type GetRoute = typeof get;
+export const retrieve = createRoute({
+  summary: "GET endpoint for retrieving full feature details",
+  description:
+    "Retrieves full feature details including coordinates from Mapbox Search Box API",
+  tags,
+  method: "get",
+  path: "/search/retrieve/{id}",
+  middleware: [
+    authMiddleware,
+    cache({
+      cacheName: "search-retrieve",
+      cacheControl: "max-age=3600",
+      wait: true,
+    }),
+  ],
+  request: {
+    params: RetrieveParamsSchema,
+    query: RetrieveQuerySchema,
+  },
+  responses: {
+    [HttpStatus.OK.CODE]: jsonContent(
+      MapboxFeatureSchema,
+      "Mapbox feature with coordinates",
+    ),
+    [HttpStatus.UNAUTHORIZED.CODE]: jsonContent(
+      unauthorizedSchema,
+      "Unauthorized",
+    ),
+    [HttpStatus.UNPROCESSABLE_ENTITY.CODE]: jsonContent(
+      createErrorSchema(RetrieveQuerySchema),
+      "Validation error(s)",
+    ),
+    [HttpStatus.NOT_FOUND.CODE]: jsonContent(
+      serverErrorSchema,
+      "Feature not found",
+    ),
+    [HttpStatus.INTERNAL_SERVER_ERROR.CODE]: jsonContent(
+      serverErrorSchema,
+      "Internal server error",
+    ),
+    [HttpStatus.GATEWAY_TIMEOUT.CODE]: jsonContent(
+      serverErrorSchema,
+      "Gateway timeout",
+    ),
+  },
+});
+
+export type SuggestRoute = typeof suggest;
+export type RetrieveRoute = typeof retrieve;

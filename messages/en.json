@@ -437,5 +437,7 @@
   "avatar_upload_too_large": "Image is too large (max 10MB)",
   "avatar_upload_success": "Profile picture updated",
   "avatar_upload_failed": "Failed to update profile picture",
-  "account_language": "Language"
+  "account_language": "Language",
+  "search_your_locations": "Your Locations",
+  "search_global_results": "Search Results"
 }

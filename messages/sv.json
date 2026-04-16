@@ -437,5 +437,7 @@
   "avatar_upload_too_large": "Bilden är för stor (max 10 MB)",
   "avatar_upload_success": "Profilbild uppdaterad",
   "avatar_upload_failed": "Profilbildsuppdatering misslyckades",
-  "account_language": "Språk"
+  "account_language": "Språk",
+  "search_your_locations": "Dina platser",
+  "search_global_results": "Sökresultat"
 }

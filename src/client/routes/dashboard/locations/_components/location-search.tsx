@@ -10,26 +10,24 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
 } from "~/client/components/ui/input-group.tsx";
 import {
   Item,
   ItemActions,
   ItemContent,
+  ItemDescription,
   ItemTitle,
 } from "~/client/components/ui/item.tsx";
 import { Skeleton } from "~/client/components/ui/skeleton.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
+import { TextField } from "~/client/components/ui/text-field.tsx";
 import {
-  TextField,
-  TextFieldErrorMessage,
-} from "~/client/components/ui/text-field.tsx";
-import { useAppForm } from "~/client/hooks/use-app-form.ts";
-import { getSearchResultsQuery } from "~/client/queries/search.ts";
+  getRetrieveQuery,
+  getSuggestionsQuery,
+} from "~/client/queries/search.ts";
 import * as m from "~/paraglide/messages.js";
-import { SearchSchema } from "~/shared/schemas/zod.ts";
-import type { NominatimResult } from "~/shared/types/search.ts";
+import type { MapboxSuggestion } from "~/shared/types/search.ts";
 
 import CircleAlert from "~icons/lucide/circle-alert";
 import MapPin from "~icons/lucide/map-pin";
@@ -37,7 +35,7 @@ import MapPinOff from "~icons/lucide/map-pin-off";
 import MapPinPlus from "~icons/lucide/map-pin-plus";
 import Search from "~icons/lucide/search";
 
-import { createSignal, For, type JSX, Show } from "solid-js";
+import { createSignal, For, type JSX, onCleanup, Show } from "solid-js";
 import { toast } from "solid-sonner";
 
 export type SearchResult = {
@@ -52,153 +50,162 @@ type LocationSearchProps = {
 };
 
 export function LocationSearch(props: LocationSearchProps): JSX.Element {
-  const [searchResults, setSearchResults] = createSignal<
-    NominatimResult[] | null
+  const [query, setQuery] = createSignal("");
+  const [suggestions, setSuggestions] = createSignal<
+    MapboxSuggestion[] | null
   >(null);
+  const [isLoading, setIsLoading] = createSignal(false);
+  const [isRetrieving, setIsRetrieving] = createSignal(false);
   const [errorMessage, setErrorMessage] = createSignal("");
+  const [sessionToken, setSessionToken] = createSignal(crypto.randomUUID());
+  const [hasFetched, setHasFetched] = createSignal(false);
 
-  const form = useAppForm(() => ({
-    defaultValues: {
-      q: "",
-    },
-    validators: {
-      onSubmit: SearchSchema,
-    },
-    onSubmitInvalid: () => {
-      toast.error(m.map_search_error());
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        setErrorMessage("");
-        const result = await getSearchResultsQuery(value);
-        setSearchResults(result);
-      } catch (error) {
-        const message = Error.isError(error)
-          ? error.message
-          : m.map_unknown_error();
-        setErrorMessage(message);
-        toast.error(message);
-      }
-    },
-  }));
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(debounceTimer));
 
-  function handleSetLocation(location: NominatimResult): void {
-    props.onSelect({
-      lat: Number(location.lat),
-      long: Number(location.lon),
-      name: location.name,
-      displayName: location.display_name,
-    });
-    form.reset();
-    setSearchResults(null);
+  function resetSession(): void {
+    setSessionToken(crypto.randomUUID());
+    setSuggestions(null);
+    setHasFetched(false);
+    setQuery("");
+  }
+
+  async function fetchSuggestions(q: string): Promise<void> {
+    if (q.trim().length === 0) {
+      setSuggestions(null);
+      setHasFetched(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
+    try {
+      const results = await getSuggestionsQuery({
+        q,
+        session_token: sessionToken(),
+      });
+      setSuggestions(results);
+      setHasFetched(true);
+    } catch (error) {
+      const message = Error.isError(error)
+        ? error.message
+        : m.map_unknown_error();
+      setErrorMessage(message);
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function handleInput(value: string): void {
+    setQuery(value);
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 300);
+  }
+
+  async function handleSelectSuggestion(
+    suggestion: MapboxSuggestion,
+  ): Promise<void> {
+    setIsRetrieving(true);
+    setErrorMessage("");
+    try {
+      const feature = await getRetrieveQuery({
+        id: suggestion.mapbox_id,
+        session_token: sessionToken(),
+      });
+
+      const [lng, lat] = feature.geometry.coordinates;
+      props.onSelect({
+        lat,
+        long: lng,
+        name: feature.properties.name,
+        displayName: feature.properties.full_address ??
+          feature.properties.place_formatted ??
+          feature.properties.name,
+      });
+      resetSession();
+    } catch (error) {
+      const message = Error.isError(error)
+        ? error.message
+        : m.map_unknown_error();
+      setErrorMessage(message);
+      toast.error(message);
+    } finally {
+      setIsRetrieving(false);
+    }
   }
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <form.Field name="q">
-          {(field) => {
-            const isInvalid = () =>
-              field().state.meta.isTouched && !field().state.meta.isValid;
-            return (
-              <>
-                <TextField
-                  data-invalid={isInvalid()}
-                  validationState={isInvalid() ? "invalid" : "valid"}
-                >
-                  <InputGroup>
-                    <InputGroupInput
-                      name={field().name}
-                      placeholder={m.map_search_placeholder()}
-                      value={field().state.value}
-                      onInput={(e) =>
-                        field().handleChange(e.currentTarget.value)}
-                      onBlur={field().handleBlur}
-                      aria-invalid={isInvalid()}
-                      disabled={field().form.state.isSubmitting}
-                    />
-                    <InputGroupAddon>
-                      <MapPin />
-                    </InputGroupAddon>
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupButton
-                        type="submit"
-                        variant="default"
-                        size="xs"
-                        disabled={field().form.state.isSubmitting ||
-                          field().state.value.trim() === ""}
-                      >
-                        <Show
-                          when={!field().form.state.isSubmitting}
-                          fallback={<Spinner />}
-                        >
-                          <Search />
-                        </Show>
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
-                  <Show when={isInvalid()}>
-                    {field().state.meta.errors.length > 0
-                      ? (field().state.meta.errors.map(
-                        (error) =>
-                          error?.message && (
-                            <TextFieldErrorMessage>
-                              {error.message}
-                            </TextFieldErrorMessage>
-                          ),
-                      ))
-                      : null}
-                  </Show>
-                </TextField>
+      <TextField>
+        <InputGroup>
+          <InputGroupInput
+            placeholder={m.map_search_placeholder()}
+            value={query()}
+            onInput={(e) => handleInput(e.currentTarget.value)}
+            disabled={isRetrieving()}
+          />
+          <InputGroupAddon>
+            <Show when={isLoading()} fallback={<Search />}>
+              <Spinner />
+            </Show>
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <MapPin />
+          </InputGroupAddon>
+        </InputGroup>
+      </TextField>
 
-                <Show when={field().form.state.isSubmitting}>
-                  <div class="my-4 flex max-h-60 flex-col gap-2 overflow-auto">
-                    <For each={[0, 1, 2]}>
-                      {() => (
-                        <Item variant="outline">
-                          <ItemContent>
-                            <Skeleton height={20} width={120} radius={15} />
-                          </ItemContent>
-                          <ItemActions>
-                            <Button variant="outline" size="sm" disabled>
-                              {m.map_set_location()}
-                              <Spinner />
-                            </Button>
-                          </ItemActions>
-                        </Item>
-                      )}
-                    </For>
-                  </div>
-                </Show>
-              </>
-            );
-          }}
-        </form.Field>
-      </form>
+      <Show when={isLoading() && !suggestions()}>
+        <div class="my-4 flex max-h-60 flex-col gap-2 overflow-auto">
+          <For each={[0, 1, 2]}>
+            {() => (
+              <Item variant="outline">
+                <ItemContent>
+                  <Skeleton height={20} width={120} radius={15} />
+                </ItemContent>
+                <ItemActions>
+                  <Button variant="outline" size="sm" disabled>
+                    {m.map_set_location()}
+                    <Spinner />
+                  </Button>
+                </ItemActions>
+              </Item>
+            )}
+          </For>
+        </div>
+      </Show>
 
-      <Show when={searchResults()}>
-        {(results) => (
+      <Show when={(suggestions()?.length ?? 0) > 0 ? suggestions() : undefined}>
+        {(list) => (
           <div class="my-4 flex max-h-72 flex-col gap-2 overflow-auto">
-            <For each={results()}>
-              {(result) => (
+            <For each={list()}>
+              {(suggestion) => (
                 <Item variant="outline">
                   <ItemContent>
-                    <ItemTitle>{result.display_name}</ItemTitle>
+                    <ItemTitle>{suggestion.name}</ItemTitle>
+                    <Show when={suggestion.place_formatted}>
+                      <ItemDescription>
+                        {suggestion.place_formatted}
+                      </ItemDescription>
+                    </Show>
                   </ItemContent>
                   <ItemActions>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleSetLocation(result)}
+                      disabled={isRetrieving()}
+                      onClick={() => handleSelectSuggestion(suggestion)}
                     >
-                      {m.map_set_location()}
-                      <MapPinPlus />
+                      <Show
+                        when={!isRetrieving()}
+                        fallback={<Spinner />}
+                      >
+                        {m.map_set_location()}
+                        <MapPinPlus />
+                      </Show>
                     </Button>
                   </ItemActions>
                 </Item>
@@ -215,7 +222,7 @@ export function LocationSearch(props: LocationSearchProps): JSX.Element {
         </Alert>
       </Show>
 
-      <Show when={searchResults() !== null && searchResults()?.length === 0}>
+      <Show when={hasFetched() && !isLoading() && suggestions()?.length === 0}>
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

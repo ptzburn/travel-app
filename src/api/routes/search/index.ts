@@ -5,8 +5,12 @@ import * as routes from "./routes.ts";
 
 const search = createRouter()
   .openapi(
-    routes.get,
-    handlers.get,
+    routes.suggest,
+    handlers.suggest,
+  )
+  .openapi(
+    routes.retrieve,
+    handlers.retrieve,
   );
 
 export default search;
