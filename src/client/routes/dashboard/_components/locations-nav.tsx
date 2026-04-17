@@ -7,20 +7,23 @@ import {
   SidebarMenuItem,
 } from "~/client/components/ui/sidebar.tsx";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
-import { locationFilters } from "~/client/stores/location-filters.ts";
 import { hoveredSlug, setHoveredSlug } from "~/client/stores/location-hover.ts";
-import * as m from "~/paraglide/messages.js";
+import { setMapMode } from "~/client/stores/map-store.ts";
 
+import * as m from "~/paraglide/messages.js";
 import MapPinIcon from "~icons/lucide/map-pin";
-import PlusIcon from "~icons/lucide/plus";
-import { For, type JSX, Show, Suspense } from "solid-js";
+import {
+  createEffect,
+  For,
+  type JSX,
+  onCleanup,
+  Show,
+  Suspense,
+} from "solid-js";
 
 export function LocationsNav(): JSX.Element {
-  const locations = createAsync(() => {
-    const f = locationFilters();
-    return getLocationsQuery({
-      search: f.search || undefined,
-    });
+  const locations = createAsync(() => getLocationsQuery(), {
+    initialValue: [],
   });
   const location = useLocation();
 
@@ -28,20 +31,22 @@ export function LocationsNav(): JSX.Element {
     hoveredSlug() === slug ||
     location.pathname === `/dashboard/locations/${slug}`;
 
+  createEffect(() => {
+    setMapMode({
+      mode: "view",
+      locations: locations().map((loc) => ({
+        ...loc,
+        href: `/dashboard/locations/${loc.slug}`,
+      })),
+    });
+  });
+
+  onCleanup(() => setMapMode({ mode: "view", locations: [] }));
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{m.nav_locations()}</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            as={A}
-            href="/dashboard/locations/add"
-            tooltip={m.nav_add_location()}
-          >
-            <PlusIcon />
-            <span class="truncate">{m.nav_add_location()}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
         <Suspense>
           <Show when={locations()} fallback={null}>
             {(locs) => (

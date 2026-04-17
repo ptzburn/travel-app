@@ -1,11 +1,4 @@
 import { useColorMode } from "@kobalte/core";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "~/client/components/ui/empty.tsx";
 import CustomMarker from "~/client/routes/dashboard/_components/custom-marker.tsx";
 import {
   type MapLocation,
@@ -13,7 +6,6 @@ import {
   mapMode,
 } from "~/client/stores/map-store.ts";
 import * as m from "~/paraglide/messages.js";
-import MapOffIcon from "~icons/lucide/map-pin-off";
 import type { LngLatBoundsLike } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -21,25 +13,11 @@ import {
   createMemo,
   For,
   type JSX,
-  Match,
   onCleanup,
   Show,
-  Switch,
 } from "solid-js";
 
 import { Map, NavigationControl, useMap, useMapEffect } from "solid-maplibre";
-
-function isWebGLSupported(): boolean {
-  try {
-    const canvas = document.createElement("canvas");
-    return !!(
-      canvas.getContext("webgl2") || canvas.getContext("webgl") ||
-      canvas.getContext("experimental-webgl")
-    );
-  } catch {
-    return false;
-  }
-}
 
 const RADIUS_SOURCE_ID = "radius-circle-source";
 const RADIUS_FILL_LAYER_ID = "radius-circle-fill";
@@ -315,45 +293,27 @@ function PickModeContent(props: { mode: MapMode }): JSX.Element {
 }
 
 export default function UnifiedMap(): JSX.Element {
-  const webgl = isWebGLSupported();
   const mode = mapMode;
   const { colorMode } = useColorMode();
 
   return (
-    <Switch>
-      <Match when={!webgl}>
-        <Empty class="h-full border-0">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <MapOffIcon />
-            </EmptyMedia>
-            <EmptyTitle>WebGL</EmptyTitle>
-            <EmptyDescription>
-              {m.map_webgl_unsupported()}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </Match>
-      <Match when={webgl}>
-        <Map
-          style={{ width: "100%", height: "100%" }}
-          options={{
-            style: colorMode() === "dark" ? DARK_STYLE : LIGHT_STYLE,
-            center: [0, 20],
-            zoom: 2,
-          }}
-          cursor={mode().mode === "pick" ? "crosshair" : undefined}
-          ondblclick={(e) => {
-            const m = mode();
-            if (m.mode === "pick") m.onPick(e.lngLat.lat, e.lngLat.lng);
-          }}
-        >
-          <NavigationControl position="top-right" />
-          <MapThemeStyle />
-          <ViewModeContent mode={mode()} />
-          <PickModeContent mode={mode()} />
-        </Map>
-      </Match>
-    </Switch>
+    <Map
+      style={{ width: "100%", height: "100%" }}
+      options={{
+        style: colorMode() === "dark" ? DARK_STYLE : LIGHT_STYLE,
+        center: [0, 20],
+        zoom: 2,
+      }}
+      cursor={mode().mode === "pick" ? "crosshair" : undefined}
+      ondblclick={(e) => {
+        const m = mode();
+        if (m.mode === "pick") m.onPick(e.lngLat.lat, e.lngLat.lng);
+      }}
+    >
+      <NavigationControl position="top-right" />
+      <MapThemeStyle />
+      <ViewModeContent mode={mode()} />
+      <PickModeContent mode={mode()} />
+    </Map>
   );
 }

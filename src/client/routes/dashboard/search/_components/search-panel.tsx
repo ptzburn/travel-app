@@ -1,10 +1,10 @@
 import { A, useLocation } from "@solidjs/router";
 import { Button } from "~/client/components/ui/button.tsx";
 import { SidebarHeader, useSidebar } from "~/client/components/ui/sidebar.tsx";
+import { SearchBar } from "~/client/routes/dashboard/search/_components/search-bar.tsx";
 import * as m from "~/paraglide/messages.js";
 import LucideX from "~icons/lucide/x";
 import { type JSX, Show } from "solid-js";
-import { SearchBar } from "./search-bar.tsx";
 
 export function SearchPanel(): JSX.Element {
   const sidebar = useSidebar();

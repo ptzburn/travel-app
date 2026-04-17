@@ -1,4 +1,4 @@
-import { A, useLocation } from "@solidjs/router";
+import { A, useLocation, useParams } from "@solidjs/router";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +13,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/client/components/ui/sidebar.tsx";
+import { LocationLogsNav } from "~/client/routes/dashboard/_components/location-logs-nav.tsx";
 import * as m from "~/paraglide/messages.js";
 import LucideSearch from "~icons/lucide/search";
 import { createEffect, type JSX, on, Show } from "solid-js";
@@ -22,6 +23,7 @@ import { NavUser } from "./nav-user.tsx";
 export function AppSidebar(): JSX.Element {
   const sidebar = useSidebar();
   const location = useLocation();
+  const params = useParams();
 
   createEffect(
     on(() => location.pathname, () => {
@@ -87,7 +89,15 @@ export function AppSidebar(): JSX.Element {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-          <LocationsNav />
+          <Show
+            when={location.pathname === "/dashboard" ||
+              location.pathname === "/dashboard/search"}
+          >
+            <LocationsNav />
+          </Show>
+          <Show when={params.slug}>
+            {(slug) => <LocationLogsNav slug={slug()} />}
+          </Show>
         </SidebarContent>
         <SidebarFooter class="mb-2">
           <NavUser />

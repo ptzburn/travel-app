@@ -25,10 +25,7 @@ import {
 import { Skeleton } from "~/client/components/ui/skeleton.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { getLocationsQuery } from "~/client/queries/locations.ts";
-import {
-  getRetrieveQuery,
-  getSuggestionsQuery,
-} from "~/client/queries/search.ts";
+import { getSuggestionsQuery } from "~/client/queries/search.ts";
 import * as m from "~/paraglide/messages.js";
 import { getLocale } from "~/paraglide/runtime.js";
 import type { LocationResponse } from "~/shared/types/locations.ts";
@@ -55,7 +52,6 @@ export function SearchBar(): JSX.Element {
     LocationResponse[] | null
   >(null);
   const [isLoading, setIsLoading] = createSignal(false);
-  const [isRetrieving, setIsRetrieving] = createSignal(false);
   const [errorMessage, setErrorMessage] = createSignal("");
   const [sessionToken, setSessionToken] = createSignal(crypto.randomUUID());
   const [hasFetched, setHasFetched] = createSignal(false);
@@ -133,29 +129,6 @@ export function SearchBar(): JSX.Element {
     }, 300);
   }
 
-  async function handleSelectSuggestion(
-    suggestion: MapboxSuggestion,
-  ): Promise<void> {
-    setIsRetrieving(true);
-    setErrorMessage("");
-    try {
-      const _feature = await getRetrieveQuery({
-        id: suggestion.mapbox_id,
-        session_token: sessionToken(),
-      });
-
-      resetSession();
-    } catch (error) {
-      const message = Error.isError(error)
-        ? error.message
-        : m.map_unknown_error();
-      setErrorMessage(message);
-      toast.error(message);
-    } finally {
-      setIsRetrieving(false);
-    }
-  }
-
   const hasLocationResults = (): boolean =>
     (locationResults()?.length ?? 0) > 0;
   const hasMapboxResults = (): boolean => (suggestions()?.length ?? 0) > 0;
@@ -188,7 +161,6 @@ export function SearchBar(): JSX.Element {
           placeholder={m.map_search_placeholder()}
           value={query()}
           onInput={(e) => handleInput(e.currentTarget.value)}
-          disabled={isRetrieving()}
           class="pr-8"
         />
       </InputGroup>
@@ -198,7 +170,6 @@ export function SearchBar(): JSX.Element {
           size="icon-sm"
           class="absolute top-1/2 right-1.5 size-6 -translate-y-1/2"
           onClick={() => resetSession()}
-          disabled={isRetrieving()}
           aria-label={m.common_close()}
         >
           <X class="size-3.5" />
@@ -292,11 +263,11 @@ export function SearchBar(): JSX.Element {
                             <ItemSeparator />
                           </Show>
                           <Item
-                            as="button"
-                            type="button"
+                            as={A}
+                            href={`/dashboard/search/${
+                              encodeURIComponent(suggestion.mapbox_id)
+                            }`}
                             class="w-full cursor-pointer rounded-none text-left hover:bg-accent/50"
-                            disabled={isRetrieving()}
-                            onClick={() => handleSelectSuggestion(suggestion)}
                           >
                             <ItemMedia>
                               <Globe class="size-4 text-muted-foreground" />

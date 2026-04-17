@@ -2,23 +2,18 @@ import {
   createAsync,
   type RouteSectionProps,
   useLocation,
+  useParams,
 } from "@solidjs/router";
 import { clientOnly } from "@solidjs/start";
 import { ErrorBoundaryMessage } from "~/client/components/error-boundary-message.tsx";
 import { Spinner } from "~/client/components/ui/spinner.tsx";
 import { SessionProvider } from "~/client/contexts/session-context.tsx";
-import { useMediaQuery } from "~/client/hooks/use-media-query.ts";
 import { getSessionQuery } from "~/client/queries/auth.ts";
-import {
-  ErrorBoundary,
-  type JSX,
-  Match,
-  Show,
-  Suspense,
-  Switch,
-} from "solid-js";
+import LocationPanel from "~/client/routes/dashboard/locations/[slug]/_components/location-panel.tsx";
+import { SearchPanel } from "~/client/routes/dashboard/search/_components/search-panel.tsx";
+import SearchResultPanel from "~/client/routes/dashboard/search/[mapboxId]/_components/search-result-panel.tsx";
+import { ErrorBoundary, type JSX, Show, Suspense } from "solid-js";
 import { SidebarInset, SidebarProvider } from "../components/ui/sidebar.tsx";
-import { SearchPanel } from "./dashboard/_components/search-panel.tsx";
 
 const Map = clientOnly(() =>
   import("~/client/routes/dashboard/_components/map.tsx")
@@ -32,14 +27,10 @@ const MobileHeader = clientOnly(() =>
   import("~/client/routes/dashboard/_components/mobile-header.tsx")
 );
 
-const MobileMapSheet = clientOnly(() =>
-  import("~/client/routes/dashboard/_components/mobile-map-sheet.tsx")
-);
-
 export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
   const session = createAsync(() => getSessionQuery());
   const location = useLocation();
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const params = useParams();
 
   return (
     <div class="flex min-h-0 flex-1 flex-col">
@@ -64,37 +55,26 @@ export default function DashboardLayout(props: RouteSectionProps): JSX.Element {
                 <SidebarProvider style={{ "--sidebar-width": "12rem" }}>
                   <AppSidebar />
                   <SearchPanel />
+                  <Show when={params.slug}>
+                    {(slug) => <LocationPanel slug={slug()} />}
+                  </Show>
+                  <Show when={params.mapboxId}>
+                    {(mapboxId) => <SearchResultPanel mapboxId={mapboxId()} />}
+                  </Show>
                   <SidebarInset>
                     <MobileHeader />
-                    <Switch>
-                      <Match when={isMobile()}>
-                        <div class="relative min-h-0 flex-1">
-                          <div class="absolute inset-0">
-                            <Map />
-                          </div>
-                          <MobileMapSheet>
-                            {props.children}
-                          </MobileMapSheet>
+                    <Show
+                      when={!location.pathname.startsWith(
+                        "/dashboard/account",
+                      )}
+                      fallback={props.children}
+                    >
+                      <div class="relative min-h-0 flex-1">
+                        <div class="fixed inset-0 z-0">
+                          <Map />
                         </div>
-                      </Match>
-                      <Match
-                        when={location.pathname === "/dashboard" ||
-                          location.pathname === "/dashboard/search"}
-                      >
-                        <div class="relative min-h-0 flex-1">
-                          <div class="fixed inset-0 z-0">
-                            <Map />
-                          </div>
-                        </div>
-                      </Match>
-                      <Match
-                        when={location.pathname.startsWith(
-                          "/dashboard/account",
-                        )}
-                      >
-                        {props.children}
-                      </Match>
-                    </Switch>
+                      </div>
+                    </Show>
                   </SidebarInset>
                 </SidebarProvider>
               </SessionProvider>

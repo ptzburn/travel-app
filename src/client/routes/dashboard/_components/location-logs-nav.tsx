@@ -14,7 +14,6 @@ import {
 } from "~/client/stores/location-log-filters.ts";
 import * as m from "~/paraglide/messages.js";
 import NotebookPen from "~icons/lucide/notebook-pen";
-import PlusIcon from "~icons/lucide/plus";
 import { createMemo, For, type JSX, Show, Suspense } from "solid-js";
 
 export function LocationLogsNav(props: { slug: string }): JSX.Element {
@@ -34,19 +33,11 @@ export function LocationLogsNav(props: { slug: string }): JSX.Element {
       `/dashboard/locations/${props.slug}/${logId}`;
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>{m.nav_location_logs()}</SidebarGroupLabel>
-      <SidebarMenu>
-        <A href={`/dashboard/locations/${props.slug}/add`}>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip={m.nav_add_location_log()}>
-              <PlusIcon />
-              <span class="truncate">{m.nav_add_location_log()}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </A>
-        <Suspense>
-          <Show when={filteredLogs().length > 0}>
+    <Suspense>
+      <Show when={filteredLogs().length > 0}>
+        <SidebarGroup>
+          <SidebarGroupLabel>{m.nav_location_logs()}</SidebarGroupLabel>
+          <SidebarMenu>
             <For each={filteredLogs()}>
               {(log) => {
                 const logSlug = `log-${log.id}`;
@@ -70,9 +61,9 @@ export function LocationLogsNav(props: { slug: string }): JSX.Element {
                 );
               }}
             </For>
-          </Show>
-        </Suspense>
-      </SidebarMenu>
-    </SidebarGroup>
+          </SidebarMenu>
+        </SidebarGroup>
+      </Show>
+    </Suspense>
   );
 }
